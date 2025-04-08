@@ -1,275 +1,215 @@
 /**
- * pdf-handler.js - Optimierte Funktionen für die Anzeige und Verarbeitung von PDF-Dateien
+ * pdf-handler.js - Funktionen für die Anzeige und Verarbeitung von PDF-Dateien
  */
 
-// Konfiguration
-const PDF_CONFIG = {
-    DEBUG: true,           // Debug-Modus
-    SCALE: 1.5,            // Skalierungsfaktor für PDF-Rendering
-    WORKER_URL: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js',
-    UPLOAD_PATH: 'uploads/' // Pfad zu hochgeladenen Dateien
-};
+// Debug-Logging aktivieren (auf false setzen für Produktion)
+const PDF_DEBUG = true;
 
-// Logger-Klasse
-class PdfLogger {
-    static log(message, data) {
-        if (!PDF_CONFIG.DEBUG) return;
-        console.log(`[PDF] ${message}`, data || '');
-    }
-    
-    static error(message, error) {
-        if (!PDF_CONFIG.DEBUG) return;
-        console.error(`[PDF Error] ${message}`, error || '');
+// Debug-Funktion
+function logPdfDebug(message, data) {
+    if (PDF_DEBUG) {
+        console.log('[PDF] ' + message, data);
     }
 }
 
-// PDF-Viewer-Klasse
-class PdfViewer {
-    /**
-     * Lädt und zeigt ein PDF an
-     * @param {string} filename - Dateiname des PDFs
-     */
-    static loadPdf(filename) {
-        PdfLogger.log('Lade PDF', { filename });
+// PDF laden und anzeigen (bleibt weitgehend unverändert)
+function loadPDF(filename) {
+    logPdfDebug('Lade PDF', { filename: filename });
+    
+    const pdfId = filename.replace(/\./g, '_');
+    const canvas = document.querySelector(`#pdf_${pdfId} canvas`);
+    const prevButton = document.getElementById(`prev_${pdfId}`);
+    const nextButton = document.getElementById(`next_${pdfId}`);
+    const pageNumSpan = document.getElementById(`page_num_${pdfId}`);
+    const pageCountSpan = document.getElementById(`page_count_${pdfId}`);
+    
+    if (!canvas || !prevButton || !nextButton || !pageNumSpan || !pageCountSpan) {
+        logPdfDebug('PDF-Elemente nicht gefunden', { pdfId: pdfId });
+        return;
+    }
+    
+    let pdfDoc = null;
+    let pageNum = 1;
+    let pageRendering = false;
+    let pageNumPending = null;
+    
+    function renderPage(num) {
+        pageRendering = true;
+        logPdfDebug('Rendere PDF-Seite', { page: num });
         
-        const pdfId = filename.replace(/\./g, '_');
-        const elements = {
-            canvas: document.querySelector(`#pdf_${pdfId} canvas`),
-            prevButton: document.getElementById(`prev_${pdfId}`),
-            nextButton: document.getElementById(`next_${pdfId}`),
-            pageNumSpan: document.getElementById(`page_num_${pdfId}`),
-            pageCountSpan: document.getElementById(`page_count_${pdfId}`)
-        };
-        
-        // Prüfen, ob alle benötigten Elemente vorhanden sind
-        if (!elements.canvas || !elements.prevButton || !elements.nextButton || 
-            !elements.pageNumSpan || !elements.pageCountSpan) {
-            PdfLogger.error('PDF-Elemente nicht gefunden', { pdfId });
-            return;
-        }
-        
-        // PDF laden
-        let pdfDoc = null;
-        let pageNum = 1;
-        let pageRendering = false;
-        let pageNumPending = null;
-        
-        // PDF-Seite rendern
-        const renderPage = (num) => {
-            pageRendering = true;
-            PdfLogger.log('Rendere Seite', { page: num });
+        pdfDoc.getPage(num).then(function(page) {
+            const viewport = page.getViewport({scale: 1.5});
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
             
-            pdfDoc.getPage(num).then((page) => {
-                const viewport = page.getViewport({ scale: PDF_CONFIG.SCALE });
-                elements.canvas.height = viewport.height;
-                elements.canvas.width = viewport.width;
-                
-                const renderContext = {
-                    canvasContext: elements.canvas.getContext('2d'),
-                    viewport: viewport
-                };
-                
-                page.render(renderContext).promise
-                    .then(() => {
-                        pageRendering = false;
-                        
-                        if (pageNumPending !== null) {
-                            renderPage(pageNumPending);
-                            pageNumPending = null;
-                        }
-                        
-                        PdfLogger.log('Seite gerendert', { page: num });
-                    })
-                    .catch((error) => {
-                        PdfLogger.error('Fehler beim Rendern der Seite', { 
-                            page: num, 
-                            error: error.message 
-                        });
-                    });
-                
-                // Navigation aktualisieren
-                elements.pageNumSpan.textContent = num;
-                elements.prevButton.disabled = num <= 1;
-                elements.nextButton.disabled = num >= pdfDoc.numPages;
-            })
-            .catch((error) => {
-                PdfLogger.error('Fehler beim Laden der Seite', { 
+            const renderContext = {
+                canvasContext: canvas.getContext('2d'),
+                viewport: viewport
+            };
+            
+            const renderTask = page.render(renderContext);
+            
+            renderTask.promise.then(function() {
+                pageRendering = false;
+                if (pageNumPending !== null) {
+                    renderPage(pageNumPending);
+                    pageNumPending = null;
+                }
+                logPdfDebug('Seite gerendert', { page: num });
+            }).catch(function(error) {
+                logPdfDebug('Fehler beim Rendern der Seite', { 
                     page: num, 
                     error: error.message 
                 });
             });
-        };
-        
-        // Warteschlange für Seitenrendering
-        const queueRenderPage = (num) => {
-            if (pageRendering) {
-                pageNumPending = num;
-            } else {
-                renderPage(num);
-            }
-        };
-        
-        // Event-Handler für Navigation
-        elements.prevButton.addEventListener('click', () => {
-            if (pageNum <= 1) return;
-            pageNum--;
-            queueRenderPage(pageNum);
+        }).catch(function(error) {
+            logPdfDebug('Fehler beim Laden der Seite', { 
+                page: num, 
+                error: error.message 
+            });
         });
         
-        elements.nextButton.addEventListener('click', () => {
-            if (pageNum >= pdfDoc.numPages) return;
-            pageNum++;
-            queueRenderPage(pageNum);
-        });
+        pageNumSpan.textContent = num;
         
-        // PDF laden
-        pdfjsLib.getDocument(`${PDF_CONFIG.UPLOAD_PATH}${filename}`).promise
-            .then((doc) => {
-                pdfDoc = doc;
-                elements.pageCountSpan.textContent = pdfDoc.numPages;
-                
-                PdfLogger.log('PDF geladen', { 
-                    filename, 
-                    pages: pdfDoc.numPages 
-                });
-                
-                renderPage(pageNum);
-            })
-            .catch((error) => {
-                PdfLogger.error('Fehler beim Laden des PDFs', { 
-                    filename, 
-                    error: error.message 
-                });
-            });
-    }
-}
-
-/**
- * PDF-OCR-Klasse zum Erkennen von Text in PDFs
- */
-class PdfOcr {
-    /**
-     * Verarbeitet ein mehrseitiges PDF für OCR
-     * @param {string} filename - Dateiname des PDFs
-     * @param {Object} options - Verarbeitungsoptionen
-     * @param {Function} progressCallback - Callback für Fortschrittsupdate (pageNum, totalPages, statusMessage)
-     * @param {Function} completeCallback - Callback für Abschluss (success, text, message)
-     */
-    static processMultipagePdf(filename, options, progressCallback, completeCallback) {
-        PdfLogger.log('Starte PDF-Texterkennung', { filename });
-        
-        pdfjsLib.getDocument(`${PDF_CONFIG.UPLOAD_PATH}${filename}`).promise
-            .then((pdfDoc) => {
-                const numPages = pdfDoc.numPages;
-                let completeText = '';
-                
-                // Status am Anfang aktualisieren
-                if (progressCallback) {
-                    progressCallback(0, numPages, `PDF mit ${numPages} Seiten wird verarbeitet...`);
-                }
-                
-                // Iterative Verarbeitung der Seiten
-                this.processPages(pdfDoc, numPages, options, progressCallback, (success, text) => {
-                    if (success && text) {
-                        completeCallback(true, text, `Text aus ${numPages} Seiten erkannt`);
-                    } else {
-                        completeCallback(false, '', 'Kein Text im PDF gefunden');
-                    }
-                });
-            })
-            .catch((error) => {
-                PdfLogger.error('Fehler beim Laden des PDFs für OCR', { 
-                    filename, 
-                    error: error.message 
-                });
-                completeCallback(false, '', `PDF konnte nicht geladen werden: ${error.message}`);
-            });
+        prevButton.disabled = num <= 1;
+        nextButton.disabled = num >= pdfDoc.numPages;
     }
     
-    /**
-     * Verarbeitet PDF-Seiten sequentiell
-     * @private
-     */
-    static processPages(pdfDoc, totalPages, options, progressCallback, finalCallback) {
-        let currentPage = 1;
-        let completeText = '';
+    function queueRenderPage(num) {
+        if (pageRendering) {
+            pageNumPending = num;
+        } else {
+            renderPage(num);
+        }
+    }
+    
+    function onPrevPage() {
+        if (pageNum <= 1) {
+            return;
+        }
+        pageNum--;
+        queueRenderPage(pageNum);
+    }
+    
+    function onNextPage() {
+        if (pageNum >= pdfDoc.numPages) {
+            return;
+        }
+        pageNum++;
+        queueRenderPage(pageNum);
+    }
+    
+    pdfjsLib.getDocument(`uploads/${filename}`).promise.then(function(pdfDoc_) {
+        pdfDoc = pdfDoc_;
+        pageCountSpan.textContent = pdfDoc.numPages;
+        logPdfDebug('PDF geladen', { 
+            filename: filename, 
+            pages: pdfDoc.numPages 
+        });
         
-        // Verarbeitungsfunktion für eine einzelne Seite
-        const processPage = () => {
-            if (progressCallback) {
-                progressCallback(currentPage, totalPages, `Verarbeite Seite ${currentPage} von ${totalPages}...`);
-            }
+        renderPage(pageNum);
+        
+        prevButton.addEventListener('click', onPrevPage);
+        nextButton.addEventListener('click', onNextPage);
+    }).catch(function(error) {
+        logPdfDebug('Fehler beim Laden des PDFs', { 
+            filename: filename, 
+            error: error.message 
+        });
+    });
+}
+
+// PDF-Texterkennung für alle Seiten (für Space OCR angepasst, mit Korrektur für Call Stack)
+function processMultipagePDF(filename, options, progressCallback, completeCallback) {
+    logPdfDebug('Starte PDF-Texterkennung', { filename: filename });
+    
+    pdfjsLib.getDocument(`uploads/${filename}`).promise.then(function(pdfDoc) {
+        const numPages = pdfDoc.numPages;
+        let completeText = '';
+        let processedPages = 0;
+        
+        // Status am Anfang aktualisieren
+        if (progressCallback) {
+            progressCallback(0, numPages, `PDF mit ${numPages} Seiten wird verarbeitet...`);
+        }
+        
+        // Iterative Verarbeitung statt Rekursion, um Call Stack Overflow zu vermeiden
+        function processPages() {
+            // Beginne mit Seite 1
+            let currentPage = 1;
             
-            PdfLogger.log('Verarbeite PDF-Seite', { page: currentPage, total: totalPages });
-            
-            // Externe Funktion zur OCR-Verarbeitung aufrufen (aus ocr.js)
-            processPDFPageForOCR(pdfDoc, currentPage, options, (err, text) => {
-                if (!err && text) {
-                    try {
-                        // Text formatieren und zum Gesamttext hinzufügen
-                        let formattedText = typeof formatText === 'function' ? formatText(text) : text.trim();
-                        
-                        if (formattedText) {
-                            const pageHeader = (completeText ? '\n\n=== SEITE ' + currentPage + ' ===\n\n' : '=== SEITE ' + currentPage + ' ===\n\n');
-                            completeText += pageHeader + formattedText;
-                        }
-                    } catch (formatError) {
-                        PdfLogger.error('Fehler bei Textformatierung', { 
-                            page: currentPage, 
-                            error: formatError.message 
-                        });
-                        // Rohtext verwenden, wenn Formatierung fehlschlägt
-                        completeText += (completeText ? '\n\n=== SEITE ' + currentPage + ' ===\n\n' : '=== SEITE ' + currentPage + ' ===\n\n') + text.trim();
-                    }
-                } else if (err) {
-                    PdfLogger.error('Fehler bei Seitenverarbeitung', { 
-                        page: currentPage, 
-                        error: err.message 
-                    });
+            // Funktion zur Verarbeitung einer einzelnen Seite
+            function processPage() {
+                // Status aktualisieren
+                if (progressCallback) {
+                    progressCallback(currentPage, numPages, `Verarbeite Seite ${currentPage} von ${numPages}...`);
                 }
                 
-                // Zur nächsten Seite oder Abschluss
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    // setTimeout verwenden, um den Call Stack zu entlasten
-                    setTimeout(processPage, 0);
-                } else {
-                    // Verarbeitung abgeschlossen
-                    PdfLogger.log('PDF-Verarbeitung abgeschlossen', { 
-                        pages: totalPages, 
-                        textLength: completeText.length 
-                    });
+                logPdfDebug('Verarbeite PDF-Seite', { 
+                    page: currentPage, 
+                    total: numPages 
+                });
+                
+                processPDFPageForOCR(pdfDoc, currentPage, options, function(err, text) {
+                    processedPages++;
                     
-                    finalCallback(completeText.length > 0, completeText);
-                }
-            });
-        };
+                    if (!err && text) {
+                        // Text dieser Seite formatieren
+                        let formattedText = '';
+                        try {
+                            formattedText = formatText(text);
+                        } catch (formatError) {
+                            logPdfDebug('Fehler bei Textformatierung', { 
+                                page: currentPage, 
+                                error: formatError.message 
+                            });
+                            formattedText = text.trim();
+                        }
+                        
+                        if (formattedText) {
+                            completeText += (completeText ? '\n\n=== SEITE ' + currentPage + ' ===\n\n' : '=== SEITE ' + currentPage + ' ===\n\n') + formattedText;
+                        }
+                    } else if (err) {
+                        logPdfDebug('Fehler bei Seitenverarbeitung', { 
+                            page: currentPage, 
+                            error: err.message 
+                        });
+                    }
+                    
+                    // Nächste Seite oder fertig
+                    if (currentPage < numPages) {
+                        currentPage++;
+                        // Verwende setTimeout, um den Call Stack zu entlasten
+                        setTimeout(processPage, 0);
+                    } else {
+                        // Alle Seiten verarbeitet
+                        logPdfDebug('PDF-Verarbeitung abgeschlossen', { 
+                            pages: numPages, 
+                            textLength: completeText.length 
+                        });
+                        
+                        if (completeText) {
+                            completeCallback(true, completeText, `Text aus ${numPages} Seiten erkannt`);
+                        } else {
+                            completeCallback(false, '', 'Kein Text im PDF gefunden');
+                        }
+                    }
+                });
+            }
+            
+            // Starte mit der ersten Seite
+            processPage();
+        }
         
-        // Starte mit der ersten Seite
-        processPage();
-    }
+        // Starte den Verarbeitungsprozess
+        processPages();
+        
+    }).catch(function(error) {
+        // Fehler beim Laden des PDFs
+        logPdfDebug('Fehler beim Laden des PDFs für OCR', { 
+            filename: filename, 
+            error: error.message 
+        });
+        completeCallback(false, '', `PDF konnte nicht geladen werden: ${error.message}`);
+    });
 }
-
-// Öffentliche API-Funktionen, die von anderen Skripten aufgerufen werden
-
-/**
- * Lädt und zeigt ein PDF an
- * @param {string} filename - Dateiname des PDFs
- */
-function loadPDF(filename) {
-    PdfViewer.loadPdf(filename);
-}
-
-/**
- * Verarbeitet ein mehrseitiges PDF für OCR
- * @param {string} filename - Dateiname des PDFs
- * @param {Object} options - Verarbeitungsoptionen
- * @param {Function} progressCallback - Callback für Fortschrittsupdate
- * @param {Function} completeCallback - Callback für Abschluss
- */
-function processMultipagePDF(filename, options, progressCallback, completeCallback) {
-    PdfOcr.processMultipagePdf(filename, options, progressCallback, completeCallback);
-}
-
-// Worker für PDF.js initialisieren (bei Ladung der Seite)
-pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_CONFIG.WORKER_URL;

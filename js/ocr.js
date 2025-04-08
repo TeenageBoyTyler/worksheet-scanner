@@ -1,157 +1,152 @@
 /**
- * ocr.js - Optimierte Funktionen für die Texterkennung mit Space OCR API
+ * ocr.js - Funktionen für die Texterkennung mit Space OCR API
  */
 
-// Konfiguration
-const CONFIG = {
-    PROXY_URL: 'ocr_space_proxy.php',
-    DEBUG: true,
-    DEFAULT_LANGUAGE: 'ger',
-    MAX_IMAGE_SIZE: 2000, // Maximale Größe für Bilder
-    JPEG_QUALITY: 0.9     // JPEG-Qualität für Base64-Konvertierung
-};
+// Proxy-URL für Space OCR API
+const OCR_SPACE_PROXY = 'ocr_space_proxy.php';
 
-// Logger-Klasse
-class OcrLogger {
-    static log(message, data) {
-        if (!CONFIG.DEBUG) return;
-        console.log(`[OCR] ${message}`, data || '');
-    }
-    
-    static error(message, error) {
-        if (!CONFIG.DEBUG) return;
-        console.error(`[OCR Error] ${message}`, error || '');
+// Debug-Logging aktivieren (auf false setzen für Produktion)
+const DEBUG = true;
+
+// Debug-Funktion
+function logDebug(message, data) {
+    if (DEBUG) {
+        console.log('[OCR] ' + message, data);
     }
 }
 
-// OCR-Service-Klasse
-class OcrService {
-    /**
-     * Bereitet ein Bild für die OCR vor
-     * @param {string} imageUrl - URL zum Bild
-     * @returns {Promise<HTMLCanvasElement>} - Canvas mit optimiertem Bild
-     */
-    static prepareImage(imageUrl) {
-        OcrLogger.log('Bereite Bild vor', { url: imageUrl });
-        
-        return new Promise((resolve, reject) => {
-            const img = new Image();
-            
-            img.onload = () => {
-                OcrLogger.log('Bild geladen', { width: img.width, height: img.height });
-                
-                // Größe anpassen wenn nötig
-                let width = img.width;
-                let height = img.height;
-                const maxDim = CONFIG.MAX_IMAGE_SIZE;
-                
-                if (width > maxDim || height > maxDim) {
-                    if (width > height) {
-                        height = (height * maxDim) / width;
-                        width = maxDim;
-                    } else {
-                        width = (width * maxDim) / height;
-                        height = maxDim;
-                    }
-                }
-                
-                // Auf Canvas zeichnen
-                const canvas = document.createElement('canvas');
-                canvas.width = width;
-                canvas.height = height;
-                
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                
-                OcrLogger.log('Bild optimiert', { width, height });
-                resolve(canvas);
-            };
-            
-            img.onerror = (error) => {
-                OcrLogger.error('Fehler beim Laden des Bildes', error);
-                reject(new Error('Bild konnte nicht geladen werden'));
-            };
-            
-            img.src = imageUrl;
-        });
-    }
+// Bild für OCR vorbereiten
+function prepareImageForOCR(imageUrl, callback) {
+    logDebug('Bereite Bild vor: ' + imageUrl);
     
-    /**
-     * Konvertiert ein Canvas-Element zu Base64
-     * @param {HTMLCanvasElement} canvas - Canvas-Element
-     * @returns {string} - Base64-String
-     */
-    static canvasToBase64(canvas) {
-        try {
-            const dataUrl = canvas.toDataURL('image/jpeg', CONFIG.JPEG_QUALITY);
-            const base64 = dataUrl.split(',')[1];
-            OcrLogger.log('Base64-Konvertierung erfolgreich', { length: base64.length });
-            return base64;
-        } catch (error) {
-            OcrLogger.error('Fehler bei Base64-Konvertierung', error);
-            throw new Error('Bild konnte nicht in Base64 konvertiert werden');
+    const img = new Image();
+    
+    img.onload = function() {
+        logDebug('Bild geladen', { width: img.width, height: img.height });
+        
+        // Größe auf max 2000px begrenzen, aber Seitenverhältnis beibehalten
+        let width = img.width;
+        let height = img.height;
+        const maxDim = 2000;
+        
+        if (width > maxDim || height > maxDim) {
+            if (width > height) {
+                height = (height * maxDim) / width;
+                width = maxDim;
+            } else {
+                width = (width * maxDim) / height;
+                height = maxDim;
+            }
         }
-    }
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Bild mit Glättung zeichnen
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        logDebug('Bild auf Canvas gezeichnet', { canvasWidth: canvas.width, canvasHeight: canvas.height });
+        callback(null, canvas);
+    };
     
-    /**
-     * Führt die Texterkennung für ein Bild durch
-     * @param {string} imageUrl - URL zum Bild
-     * @returns {Promise<string>} - Erkannter Text
-     */
-    static async recognizeText(imageUrl) {
-        OcrLogger.log('Starte Texterkennung', { url: imageUrl });
+    img.onerror = function(error) {
+        logDebug('Fehler beim Laden des Bildes', error);
+        callback(new Error('Bild konnte nicht geladen werden'), null);
+    };
+    
+    img.src = imageUrl;
+}
+
+// Base64-Kodierung für ein Canvas-Element
+function canvasToBase64(canvas) {
+    try {
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        const base64 = dataUrl.split(',')[1];
+        logDebug('Bild in Base64 konvertiert', { length: base64.length });
+        return base64;
+    } catch (error) {
+        logDebug('Fehler bei Base64-Konvertierung', error);
+        throw new Error('Bild konnte nicht in Base64 konvertiert werden: ' + error.message);
+    }
+}
+
+// Texterkennung für ein Bild durchführen mit Space OCR API
+function recognizeImageText(imageUrl, options, callback) {
+    logDebug('Starte Texterkennung für: ' + imageUrl);
+    
+    prepareImageForOCR(imageUrl, function(err, canvas) {
+        if (err) {
+            logDebug('Fehler bei Bildvorbereitung', err);
+            callback(false, err.message);
+            return;
+        }
         
         try {
-            // Bild vorbereiten
-            const canvas = await this.prepareImage(imageUrl);
+            // Bild in Base64 konvertieren
+            const base64Image = canvasToBase64(canvas);
             
-            // Base64 konvertieren
-            const base64Image = this.canvasToBase64(canvas);
+            logDebug('Sende Bild an OCR API', { base64Length: base64Image.length });
             
-            // API-Anfrage
-            const response = await fetch(CONFIG.PROXY_URL, {
+            // API-Anfrage an den Proxy senden
+            fetch(OCR_SPACE_PROXY, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
                     base64Image: base64Image,
-                    language: CONFIG.DEFAULT_LANGUAGE
+                    language: 'ger' // Deutsch
                 })
+            })
+            .then(response => {
+                logDebug('API-Antwort erhalten', { 
+                    status: response.status, 
+                    ok: response.ok 
+                });
+                
+                if (!response.ok) {
+                    throw new Error('HTTP-Fehler: ' + response.status);
+                }
+                
+                return response.json();
+            })
+            .then(data => {
+                logDebug('Verarbeite API-Daten', data);
+                
+                if (data.success && data.text) {
+                    // Text formatieren und zurückgeben
+                    try {
+                        const formattedText = formatText(data.text);
+                        logDebug('Text formatiert', { length: formattedText.length });
+                        callback(true, formattedText);
+                    } catch (error) {
+                        logDebug('Fehler bei Textformatierung', error);
+                        callback(false, 'Fehler bei Textformatierung: ' + error.message);
+                    }
+                } else {
+                    logDebug('Keine Textdaten in API-Antwort', data);
+                    callback(false, data.message || 'Texterkennung fehlgeschlagen');
+                }
+            })
+            .catch(error => {
+                logDebug('Fehler bei API-Anfrage', error);
+                callback(false, 'OCR-Fehler: ' + error.message);
             });
-            
-            OcrLogger.log('API-Antwort erhalten', { 
-                status: response.status, 
-                ok: response.ok 
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP-Fehler: ${response.status}`);
-            }
-            
-            // Daten verarbeiten
-            const data = await response.json();
-            
-            if (!data.success) {
-                throw new Error(data.message || 'Texterkennung fehlgeschlagen');
-            }
-            
-            return data.text;
         } catch (error) {
-            OcrLogger.error('Fehler bei Texterkennung', error);
-            throw error;
+            logDebug('Fehler im OCR-Prozess', error);
+            callback(false, 'OCR-Fehler: ' + error.message);
         }
-    }
+    });
+}
+
+// PDF-Seite für OCR verarbeiten
+function processPDFPageForOCR(pdfDoc, pageNum, options, callback) {
+    logDebug('Verarbeite PDF-Seite', { pageNum: pageNum });
     
-    /**
-     * Erkennt Text in einer PDF-Seite
-     * @param {Object} pdfDoc - PDF.js Dokument
-     * @param {number} pageNum - Seitennummer
-     * @returns {Promise<string>} - Erkannter Text
-     */
-    static async processPdfPage(pdfDoc, pageNum) {
-        OcrLogger.log('Verarbeite PDF-Seite', { page: pageNum });
-        
-        try {
-            const page = await pdfDoc.getPage(pageNum);
+    try {
+        pdfDoc.getPage(pageNum).then(function(page) {
             const viewport = page.getViewport({ scale: 1.5 });
             
             const canvas = document.createElement('canvas');
@@ -163,117 +158,105 @@ class OcrService {
                 viewport: viewport
             };
             
-            await page.render(renderContext).promise;
-            
-            OcrLogger.log('PDF-Seite gerendert', { 
-                page: pageNum, 
-                width: canvas.width, 
-                height: canvas.height 
+            page.render(renderContext).promise.then(function() {
+                logDebug('PDF-Seite gerendert', { 
+                    pageNum: pageNum, 
+                    width: canvas.width, 
+                    height: canvas.height 
+                });
+                
+                // Seite als Base64 konvertieren
+                try {
+                    const base64Image = canvasToBase64(canvas);
+                    
+                    // API-Anfrage an den Proxy senden
+                    fetch(OCR_SPACE_PROXY, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            base64Image: base64Image,
+                            language: 'ger' // Deutsch
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.text) {
+                            logDebug('Text für PDF-Seite erkannt', { 
+                                pageNum: pageNum, 
+                                textLength: data.text.length 
+                            });
+                            callback(null, data.text);
+                        } else {
+                            callback(new Error(data.message || 'Texterkennung fehlgeschlagen'), null);
+                        }
+                    })
+                    .catch(error => {
+                        logDebug('API-Fehler bei PDF-Seite', { 
+                            pageNum: pageNum, 
+                            error: error.message 
+                        });
+                        callback(error, null);
+                    });
+                } catch (error) {
+                    logDebug('Fehler bei Base64-Konvertierung', error);
+                    callback(error, null);
+                }
+            }).catch(function(error) {
+                logDebug('Fehler beim Rendern der PDF-Seite', { 
+                    pageNum: pageNum, 
+                    error: error.message 
+                });
+                callback(error, null);
             });
-            
-            // Base64 konvertieren
-            const base64Image = this.canvasToBase64(canvas);
-            
-            // API-Anfrage
-            const response = await fetch(CONFIG.PROXY_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    base64Image: base64Image,
-                    language: CONFIG.DEFAULT_LANGUAGE
-                })
+        }).catch(function(error) {
+            logDebug('Fehler beim Laden der PDF-Seite', { 
+                pageNum: pageNum, 
+                error: error.message 
             });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP-Fehler: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            if (!data.success) {
-                throw new Error(data.message || 'Texterkennung fehlgeschlagen');
-            }
-            
-            return data.text;
-        } catch (error) {
-            OcrLogger.error('Fehler bei PDF-Seitenverarbeitung', error);
-            throw error;
-        }
+            callback(error, null);
+        });
+    } catch (error) {
+        logDebug('Allgemeiner Fehler bei PDF-Verarbeitung', error);
+        callback(error, null);
     }
 }
 
-// Öffentliche API-Funktionen
-
-/**
- * Führt OCR auf einem Bild durch
- * @param {string} imageUrl - URL zum Bild
- * @param {Object} options - Optionen (momentan nicht verwendet)
- * @param {Function} callback - Callback-Funktion(success, result)
- */
-function recognizeImageText(imageUrl, options, callback) {
-    OcrService.recognizeText(imageUrl)
-        .then(text => {
-            const formattedText = formatText(text);
-            callback(true, formattedText);
-        })
-        .catch(error => {
-            callback(false, `OCR-Fehler: ${error.message}`);
-        });
-}
-
-/**
- * Verarbeitet eine PDF-Seite für OCR
- * @param {Object} pdfDoc - PDF.js Dokument
- * @param {number} pageNum - Seitennummer
- * @param {Object} options - Optionen
- * @param {Function} callback - Callback-Funktion(error, text)
- */
-function processPDFPageForOCR(pdfDoc, pageNum, options, callback) {
-    OcrService.processPdfPage(pdfDoc, pageNum)
-        .then(text => {
-            callback(null, text);
-        })
-        .catch(error => {
-            callback(error, null);
-        });
-}
-
-/**
- * Formatiert den erkannten Text
- * @param {string} text - Roher Text
- * @returns {string} - Formatierter Text
- */
+// Text formatieren für bessere Lesbarkeit
 function formatText(text) {
-    // Externe formatText-Funktion verwenden, wenn verfügbar
+    logDebug('Formatiere Text', { length: text.length });
+    
+    // Verwende die bestehende formatText Funktion aus utils.js, falls verfügbar
     if (typeof window.formatText === 'function') {
         try {
             return window.formatText(text);
         } catch (error) {
-            OcrLogger.error('Fehler bei externer Textformatierung', error);
+            logDebug('Fehler bei externer Textformatierung', error);
+            // Fallback zur einfachen Formatierung
             return text.trim();
         }
     }
     
+    // Einfache Formatierung, falls keine externe Funktion verfügbar ist
     return text.trim();
 }
 
-/**
- * Scannt eine hochgeladene Datei
- * @param {string} filename - Dateiname
- * @param {Function} callback - Callback-Funktion(success, message)
- */
+// Automatische Texterkennung für hochgeladene Dateien
 function scanUploadedFile(filename, callback) {
+    logDebug('Starte Texterkennung für Datei', { filename: filename });
+    
     const fileExtension = filename.split('.').pop().toLowerCase();
     const isPdf = fileExtension === 'pdf';
     
-    OcrLogger.log('Starte Scan', { filename, type: isPdf ? 'PDF' : 'Bild' });
-    
     if (isPdf) {
-        // PDF verarbeiten
+        // Für PDFs: Alle Seiten verarbeiten mit Status-Updates
+        logDebug('Verarbeite PDF-Datei', { filename: filename });
+        
         processMultipagePDF(
             filename, 
-            {}, 
-            (pageNum, totalPages, statusMessage) => {
+            {}, // Keine besonderen Optionen nötig
+            function(pageNum, totalPages, statusMessage) {
                 // Fortschritt aktualisieren
                 const uploadStatus = document.getElementById('uploadStatus');
                 const uploadProgress = document.getElementById('uploadProgress');
@@ -287,8 +270,20 @@ function scanUploadedFile(filename, callback) {
                     uploadProgress.style.width = progress + '%';
                     uploadProgress.textContent = progress + '%';
                 }
+                
+                logDebug('PDF-Fortschritt aktualisiert', { 
+                    pageNum: pageNum, 
+                    totalPages: totalPages, 
+                    progress: progress 
+                });
             },
-            (success, text, message) => {
+            function(success, text, message) {
+                logDebug('PDF-Verarbeitung abgeschlossen', { 
+                    success: success, 
+                    textLength: text ? text.length : 0, 
+                    message: message 
+                });
+                
                 if (success && text) {
                     saveScannedText(filename, text);
                 }
@@ -296,16 +291,23 @@ function scanUploadedFile(filename, callback) {
             }
         );
     } else {
-        // Bild verarbeiten
+        // Für Bilder: Texterkennung durchführen
+        logDebug('Verarbeite Bilddatei', { filename: filename });
+        
         recognizeImageText(
             `uploads/${filename}`,
             {},
-            (success, result) => {
+            function(success, result) {
+                logDebug('Bild-OCR abgeschlossen', { 
+                    success: success, 
+                    resultLength: result ? result.length : 0 
+                });
+                
                 if (success) {
                     saveScannedText(filename, result);
                     callback(true, 'Bild-Text erkannt');
                 } else {
-                    callback(false, result); // Fehlermeldung
+                    callback(false, result); // Result enthält die Fehlermeldung
                 }
             }
         );
