@@ -1,0 +1,73 @@
+/**
+ * utils.css - Hilfsklassen und Dienstprogramm-Stile
+ */
+
+/* Versteckte Elemente */
+.hidden {
+    display: none !important;
+}
+
+/* Text-Hervorhebungen */
+.highlight {
+    background-color: yellow;
+    font-weight: bold;
+}
+
+/* Status-Anzeigen */
+.no-results {
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+    color: #666;
+}
+
+.search-status {
+    margin-top: 10px;
+    font-style: italic;
+    color: #666;
+}
+
+/* Utility-Klassen */
+.search-highlight {
+    border: 3px solid #FFC107;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+}
+
+/* Abstand-Utilities */
+.mb-10 {
+    margin-bottom: 10px;
+}
+
+.mt-10 {
+    margin-top: 10px;
+}
+
+.p-10 {
+    padding: 10px;
+}
+
+/* Flex-Utilities */
+.d-flex {
+    display: flex;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.gap-10 {
+    gap: 10px;
+}
+
+/* Text-Utilities */
+.text-center {
+    text-align: center;
+}
+
+.text-italic {
+    font-style: italic;
+}
+
+.text-bold {
+    font-weight: bold;
+}

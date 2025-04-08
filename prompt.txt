@@ -1,0 +1,1 @@
+Create a website that let's me upload images to my webspace via php. The uploaded images should be listet on the main page. There should also be two buttons underneath. One to delete the uploaded image and the other is an Ai text scanner that scans the images for text (tesseract.js) the plain text should be then pasted under the image. Main language is german - deutsch.

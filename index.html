@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <!-- Meta-Tags und Titel -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Datei Upload & Texterkennung</title>
+        
+        <!-- Externe Bibliotheken -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/2.1.1/tesseract.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+       <!-- CSS-Dateien -->
+       <link rel="stylesheet" href="styles/main.css">
+       <link rel="stylesheet" href="styles/layout.css">
+       <link rel="stylesheet" href="styles/components.css">
+       <link rel="stylesheet" href="styles/utils.css">
+</head>
+<body>
+    <h1>Datei Upload & Texterkennung</h1>
+    
+    <div class="upload-container">
+        <h2>Neue Datei hochladen</h2>
+        <form id="uploadForm" action="upload.php" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="file" name="imageFile" id="imageFile" accept="image/jpeg,image/png,image/gif,image/webp,application/pdf" required>
+                <small>Erlaubte Dateitypen: JPG, PNG, GIF, WebP, PDF</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Hochladen</button>
+        </form>
+        <div id="uploadProgressBox" class="upload-progress-box">
+            <h3>Upload wird verarbeitet</h3>
+            <div>
+                <div class="progress-container" style="display: block;">
+                    <div id="uploadProgress" class="progress-bar">0%</div>
+                </div>
+                <p id="uploadStatus">Datei wird hochgeladen...</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="search-container">
+        <h2>Textsuche</h2>
+        <form id="searchForm" class="search-form">
+            <input type="text" id="searchInput" placeholder="Suchbegriff eingeben..." required>
+            <button type="submit" class="btn btn-primary">Suchen</button>
+            <button type="button" class="btn" id="clearSearchBtn" onclick="clearSearch()">Alle Dateien anzeigen</button>
+        </form>
+        <div class="search-status" id="searchStatus"></div>
+    </div>
+    
+    <h2>Meine Dateien</h2>
+    <div class="image-grid" id="imageGrid">
+        <!-- Bilder werden hier dynamisch eingefügt -->
+    </div>
+
+        <!-- Am Ende des body-Tags die eigenen JS-Dateien einbinden -->
+        <script src="js/utils.js"></script>
+        <script src="js/pdf-handler.js"></script>
+        <script src="js/ocr.js"></script>
+        <script src="js/core.js"></script>
+
+</body>
+</html>
