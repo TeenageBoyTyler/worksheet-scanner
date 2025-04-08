@@ -3,43 +3,93 @@
  * Diese Datei sollte als letzte geladen werden, da sie von den anderen JS-Dateien abhängt
  */
 
-// Dokumentenfertig-Event-Handler 
-document.addEventListener('DOMContentLoaded', function() {
-    // PDF.js Worker initialisieren
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+// Konfiguration
+const CORE_CONFIG = {
+    DEBUG: true,               // Debug-Modus
+    UPLOAD_PATH: 'uploads/',   // Pfad zu hochgeladenen Dateien
+    ENDPOINTS: {
+        UPLOAD: 'upload.php',
+        GET_IMAGES: 'get_images.php',
+        SEARCH: 'search_text.php'
+    }
+};
+
+// Logger-Klasse
+class CoreLogger {
+    static log(message, data) {
+        if (!CORE_CONFIG.DEBUG) return;
+        console.log(`[Core] ${message}`, data || '');
+    }
     
-    // Bilder laden
-    loadImages();
-    
-    // Suchformular-Handler
-    document.getElementById('searchForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
-        if (searchTerm.length > 0) {
-            searchFiles(searchTerm);
+    static error(message, error) {
+        if (!CORE_CONFIG.DEBUG) return;
+        console.error(`[Core Error] ${message}`, error || '');
+    }
+}
+
+/**
+ * UploadManager - Verwaltet Datei-Uploads
+ */
+class UploadManager {
+    /**
+     * Initialisiert den Upload-Manager
+     */
+    static initialize() {
+        CoreLogger.log('Initialisiere Upload-Manager');
+        
+        const uploadForm = document.getElementById('uploadForm');
+        if (!uploadForm) {
+            CoreLogger.error('Upload-Formular nicht gefunden');
+            return;
         }
-    });
+        
+        uploadForm.addEventListener('submit', this.handleUpload);
+    }
     
-    // Upload-Formular-Handler
-    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+    /**
+     * Behandelt den Formular-Submit für Uploads
+     * @param {Event} e - Submit-Event
+     */
+    static handleUpload(e) {
         e.preventDefault();
+        CoreLogger.log('Upload-Formular abgesendet');
         
         const formData = new FormData(this);
         const uploadProgressBox = document.getElementById('uploadProgressBox');
         const uploadProgress = document.getElementById('uploadProgress');
         const uploadStatus = document.getElementById('uploadStatus');
         
+        if (!uploadProgressBox || !uploadProgress || !uploadStatus) {
+            CoreLogger.error('Upload-Fortschrittselemente nicht gefunden');
+            alert('Fehler beim Vorbereiten des Uploads');
+            return;
+        }
+        
+        // Fortschrittsanzeige vorbereiten
         uploadProgressBox.style.display = 'block';
         uploadProgress.style.width = '0%';
         uploadProgress.textContent = '0%';
         uploadStatus.textContent = 'Datei wird hochgeladen...';
         
-        fetch('upload.php', {
+        CoreLogger.log('Sende Datei an Server');
+        
+        // Upload starten
+        fetch(CORE_CONFIG.ENDPOINTS.UPLOAD, {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+            CoreLogger.log('Upload-Antwort erhalten', { status: response.status });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP-Fehler: ${response.status}`);
+            }
+            
+            return response.json();
+        })
         .then(data => {
+            CoreLogger.log('Upload-Antwort verarbeitet', data);
+            
             if (data.success) {
                 uploadProgress.style.width = '50%';
                 uploadProgress.textContent = '50%';
@@ -47,6 +97,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Nach erfolgreichem Upload automatisch Text scannen
                 scanUploadedFile(data.filename, function(success, message) {
+                    CoreLogger.log('Texterkennung abgeschlossen', { success, message });
+                    
                     if (success) {
                         uploadProgress.style.width = '100%';
                         uploadProgress.textContent = '100%';
@@ -71,194 +123,58 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Fehler beim Hochladen: ' + data.message);
             }
         })
-        .catch(() => {
+        .catch(error => {
+            CoreLogger.error('Fehler beim Upload', { error: error.message });
             uploadProgressBox.style.display = 'none';
-            // Fehler behandeln ohne Console-Ausgabe
             alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
         });
-    });
-});
+    }
+}
 
-// Bilder vom Server laden
-function loadImages(searchTerm = null) {
-    let url = 'get_images.php';
-    if (searchTerm) {
-        url += '?search=' + encodeURIComponent(searchTerm);
+/**
+ * ImageGallery - Verwaltet die Bildergalerie
+ */
+class ImageGallery {
+    /**
+     * Initialisiert die Bildergalerie
+     */
+    static initialize() {
+        CoreLogger.log('Initialisiere Bildergalerie');
+        this.loadImages();
     }
     
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            const imageGrid = document.getElementById('imageGrid');
-            imageGrid.innerHTML = '';
-            
-            if (data.length === 0) {
-                imageGrid.innerHTML = '<p class="no-results">Keine Dateien vorhanden.</p>';
-                return;
-            }
-            
-            if (searchTerm && data.length === 0) {
-                imageGrid.innerHTML = '<p class="no-results">Keine Suchergebnisse für "' + searchTerm + '"</p>';
-                return;
-            }
-            
-            data.forEach(file => {
-                // Bei Suche können wir erweiterte Dateninformationen erhalten
-                let filename, text, highlight;
-                if (typeof file === 'object' && file.filename) {
-                    filename = file.filename;
-                    text = file.text || '';
-                    highlight = file.highlight || '';
-                } else {
-                    filename = file;
-                    text = '';
-                    highlight = '';
+    /**
+     * Lädt Bilder vom Server und zeigt sie an
+     * @param {string|null} searchTerm - Optionaler Suchbegriff
+     */
+    static loadImages(searchTerm = null) {
+        CoreLogger.log('Lade Bilder', { searchTerm });
+        
+        let url = CORE_CONFIG.ENDPOINTS.GET_IMAGES;
+        if (searchTerm) {
+            url += '?search=' + encodeURIComponent(searchTerm);
+        }
+        
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP-Fehler: ${response.status}`);
                 }
-                
-                const card = document.createElement('div');
-                card.className = 'image-card';
-                if (searchTerm) {
-                    card.classList.add('search-highlight');
-                }
-                
-                const fileExtension = filename.split('.').pop().toLowerCase();
-                const isPdf = fileExtension === 'pdf';
-                
-                let previewHTML;
-                if (isPdf) {
-                    previewHTML = `
-                        <div class="image-wrapper">
-                            <div class="pdf-preview" id="pdf_${filename.replace(/\./g, '_')}">
-                                <div>PDF-Dokument wird geladen...</div>
-                                <canvas></canvas>
-                                <div class="pdf-controls">
-                                    <button class="btn" id="prev_${filename.replace(/\./g, '_')}" disabled>Zurück</button>
-                                    <span>Seite <span id="page_num_${filename.replace(/\./g, '_')}">1</span> / <span id="page_count_${filename.replace(/\./g, '_')}">?</span></span>
-                                    <button class="btn" id="next_${filename.replace(/\./g, '_')}" disabled>Vor</button>
-                                </div>
-                            </div>
-                            <span class="file-type-badge">PDF</span>
-                        </div>
-                    `;
-                } else {
-                    previewHTML = `
-                        <div class="image-wrapper">
-                            <img src="uploads/${filename}" alt="${filename}">
-                            <span class="file-type-badge">${fileExtension.toUpperCase()}</span>
-                        </div>
-                    `;
-                }
-                
-                card.innerHTML = `
-                    ${previewHTML}
-                    <div class="image-actions">
-                        <button class="btn btn-info" onclick="printFile('${filename}')">Drucken</button>
-                        <button class="btn btn-danger" onclick="deleteImage('${filename}')">Löschen</button>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar">0%</div>
-                    </div>
-                    <div class="loading">Text wird erkannt...</div>
-                    <div class="text-content hidden">${searchTerm ? highlightText(text, searchTerm) : text}</div>
-                `;
-                
-                imageGrid.appendChild(card);
-                
-                // Text laden, wenn vorhanden
-                if (!text) {
-                    loadText(filename, card.querySelector('.text-content'));
-                }
-                
-                // PDF laden, wenn es sich um ein PDF handelt
-                if (isPdf) {
-                    loadPDF(filename);
+                return response.json();
+            })
+            .then(data => {
+                CoreLogger.log('Bilder geladen', { count: data.length });
+                this.renderImageGrid(data, searchTerm);
+            })
+            .catch(error => {
+                CoreLogger.error('Fehler beim Laden der Bilder', { error: error.message });
+                const imageGrid = document.getElementById('imageGrid');
+                if (imageGrid) {
+                    imageGrid.innerHTML = '<p class="no-results">Fehler beim Laden der Bilder.</p>';
                 }
             });
-            
-            // Suchergebnis-Status aktualisieren
-            if (searchTerm) {
-                document.getElementById('searchStatus').textContent = 
-                    `${data.length} Ergebnis${data.length !== 1 ? 'se' : ''} für "${searchTerm}" gefunden`;
-            } else {
-                document.getElementById('searchStatus').textContent = '';
-            }
-        })
-        .catch(() => {
-            // Fehler still behandeln ohne Console-Ausgabe
-        });
-}
-
-// Suche in Dateien
-function searchFiles(searchTerm) {
-    fetch('search_text.php?search=' + encodeURIComponent(searchTerm))
-        .then(response => response.json())
-        .then(data => {
-            const imageGrid = document.getElementById('imageGrid');
-            imageGrid.innerHTML = '';
-            
-            if (data.length === 0) {
-                imageGrid.innerHTML = '<p class="no-results">Keine Suchergebnisse für "' + searchTerm + '"</p>';
-                document.getElementById('searchStatus').textContent = '0 Ergebnisse gefunden';
-                return;
-            }
-            
-            data.forEach(file => {
-                const card = document.createElement('div');
-                card.className = 'image-card search-highlight';
-                
-                const fileExtension = file.filename.split('.').pop().toLowerCase();
-                const isPdf = fileExtension === 'pdf';
-                
-                let previewHTML;
-                if (isPdf) {
-                    previewHTML = `
-                        <div class="image-wrapper">
-                            <div class="pdf-preview" id="pdf_${file.filename.replace(/\./g, '_')}">
-                                <div>PDF-Dokument wird geladen...</div>
-                                <canvas></canvas>
-                                <div class="pdf-controls">
-                                    <button class="btn" id="prev_${file.filename.replace(/\./g, '_')}" disabled>Zurück</button>
-                                    <span>Seite <span id="page_num_${file.filename.replace(/\./g, '_')}">1</span> / <span id="page_count_${file.filename.replace(/\./g, '_')}">?</span></span>
-                                    <button class="btn" id="next_${file.filename.replace(/\./g, '_')}" disabled>Vor</button>
-                                </div>
-                            </div>
-                            <span class="file-type-badge">PDF</span>
-                        </div>
-                    `;
-                } else {
-                    previewHTML = `
-                        <div class="image-wrapper">
-                            <img src="uploads/${file.filename}" alt="${file.filename}">
-                            <span class="file-type-badge">${fileExtension.toUpperCase()}</span>
-                        </div>
-                    `;
-                }
-                
-                card.innerHTML = `
-                    ${previewHTML}
-                    <div class="image-actions">
-                        <button class="btn btn-info" onclick="printFile('${file.filename}')">Drucken</button>
-                        <button class="btn btn-danger" onclick="deleteImage('${file.filename}')">Löschen</button>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar">0%</div>
-                    </div>
-                    <div class="loading">Text wird erkannt...</div>
-                    <div class="text-content hidden">${highlightText(file.text, searchTerm)}</div>
-                `;
-                
-                imageGrid.appendChild(card);
-                
-                // PDF laden, wenn es sich um ein PDF handelt
-                if (isPdf) {
-                    loadPDF(file.filename);
-                }
-            });
-            
-            document.getElementById('searchStatus').textContent = 
-                `${data.length} Ergebnis${data.length !== 1 ? 'se' : ''} für "${searchTerm}" gefunden`;
-        })
-        .catch(() => {
-            // Fehler still behandeln ohne Console-Ausgabe
-        });
-}
+    }
+    
+    /**
+     * Rendert das Bildergitter
+     * @param {
