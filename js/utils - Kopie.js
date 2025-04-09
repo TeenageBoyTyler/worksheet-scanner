@@ -96,22 +96,6 @@ function printFile(filename) {
 function clearSearch() {
     document.getElementById('searchInput').value = '';
     document.getElementById('searchStatus').textContent = '';
-    
-    // Batch-Auswahl zurücksetzen, wenn vorhanden
-    if (typeof batchOperations !== 'undefined') {
-        batchOperations.selectedItems = [];
-        batchOperations.selectAll = false;
-        
-        // Select All Checkbox zurücksetzen
-        const selectAllCheckbox = document.getElementById('batch-select-all');
-        if (selectAllCheckbox) {
-            selectAllCheckbox.checked = false;
-        }
-        
-        // Batch-Panel aktualisieren
-        batchOperations.updateBatchPanel();
-    }
-    
     loadImages();
 }
 
@@ -128,12 +112,6 @@ function deleteImage(filename) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Datei aus der Batch-Auswahl entfernen, wenn vorhanden
-                if (typeof batchOperations !== 'undefined') {
-                    batchOperations.removeFromSelection(filename);
-                    batchOperations.updateBatchPanel();
-                }
-                
                 // Suche aktualisieren, falls eine Suche aktiv ist
                 const searchInput = document.getElementById('searchInput');
                 if (searchInput.value.trim()) {

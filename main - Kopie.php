@@ -18,14 +18,58 @@ $user = $_SESSION['user'];
         
         <!-- Externe Bibliotheken -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-        
-        <!-- CSS-Dateien -->
-        <link rel="stylesheet" href="styles/main.css">
-        <link rel="stylesheet" href="styles/layout.css">
-        <link rel="stylesheet" href="styles/components.css">
-        <link rel="stylesheet" href="styles/utils.css">
-        <link rel="stylesheet" href="styles/batch.css">
-    </head>
+       <!-- CSS-Dateien -->
+       <link rel="stylesheet" href="styles/main.css">
+       <link rel="stylesheet" href="styles/layout.css">
+       <link rel="stylesheet" href="styles/components.css">
+       <link rel="stylesheet" href="styles/utils.css">
+       <style>
+       /* Inline-Styles für die Benutzerinfo */
+       .main-header {
+           background-color: #f5f5f5;
+           border-bottom: 1px solid #ddd;
+           margin-bottom: 20px;
+           padding: 10px 0;
+       }
+       
+       .header-content {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           max-width: 1200px;
+           margin: 0 auto;
+           padding: 0 20px;
+       }
+       
+       .main-header h1 {
+           margin: 0;
+           font-size: 24px;
+           text-align: left;
+       }
+       
+       .user-info {
+           display: flex;
+           align-items: center;
+           gap: 10px;
+           font-size: 14px;
+           color: #666;
+       }
+       
+       .btn-sm {
+           padding: 5px 10px;
+           font-size: 12px;
+           background-color: #f44336;
+           color: white;
+           border-radius: 4px;
+           text-decoration: none;
+           border: none;
+       }
+       
+       .btn-sm:hover {
+           background-color: #d32f2f;
+       }
+       </style>
+</head>
 <body>
     <header class="main-header">
         <div class="header-content">
@@ -67,38 +111,16 @@ $user = $_SESSION['user'];
         <div class="search-status" id="searchStatus"></div>
     </div>
     
-    <!-- Batch-Operationen Panel -->
-    <div id="batch-operations-panel" class="batch-operations-panel hidden">
-        <div class="batch-header">
-            <div class="batch-selection">
-                <input type="checkbox" id="batch-select-all" class="batch-checkbox">
-                <label for="batch-select-all">Alle auswählen</label>
-                <span id="selected-count-wrapper">(<span id="selected-count">0</span> ausgewählt)</span>
-            </div>
-            <div class="batch-actions">
-                <button id="batch-print-button" class="btn btn-info">Ausgewählte drucken</button>
-                <button id="batch-delete-button" class="btn btn-danger">Ausgewählte löschen</button>
-            </div>
-        </div>
-        <div id="batch-progress" class="batch-progress hidden">
-            <div class="progress-container">
-                <div id="batch-progress-bar" class="progress-bar">0%</div>
-            </div>
-            <p id="batch-progress-text">0/0 Dateien verarbeitet</p>
-        </div>
-    </div>
-    
     <h2>Meine Dateien</h2>
     <div class="image-grid" id="imageGrid">
         <!-- Bilder werden hier dynamisch eingefügt -->
     </div>
 
-    <!-- Am Ende des body-Tags die eigenen JS-Dateien einbinden -->
-    <script src="js/utils.js"></script>
-    <script src="js/pdf-handler.js"></script>
-    <script src="js/ocr.js"></script>
-    <script src="js/batch-operations.js"></script>
-    <script src="js/core.js"></script>
+        <!-- Am Ende des body-Tags die eigenen JS-Dateien einbinden -->
+        <script src="js/utils.js"></script>
+        <script src="js/pdf-handler.js"></script>
+        <script src="js/ocr.js"></script>
+        <script src="js/core.js"></script>
 
 </body>
 </html>

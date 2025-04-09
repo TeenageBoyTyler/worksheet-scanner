@@ -130,8 +130,6 @@ function loadImages(searchTerm = null) {
                 
                 const card = document.createElement('div');
                 card.className = 'image-card';
-                card.dataset.filename = filename; // Dateinamen als Datensatz speichern
-                
                 if (searchTerm) {
                     card.classList.add('search-highlight');
                 }
@@ -143,9 +141,6 @@ function loadImages(searchTerm = null) {
                 if (isPdf) {
                     previewHTML = `
                         <div class="image-wrapper">
-                            <div class="image-select-wrapper">
-                                <input type="checkbox" class="image-select-checkbox" title="Auswählen">
-                            </div>
                             <div class="pdf-preview" id="pdf_${filename.replace(/\./g, '_')}">
                                 <div>PDF-Dokument wird geladen...</div>
                                 <canvas></canvas>
@@ -161,9 +156,6 @@ function loadImages(searchTerm = null) {
                 } else {
                     previewHTML = `
                         <div class="image-wrapper">
-                            <div class="image-select-wrapper">
-                                <input type="checkbox" class="image-select-checkbox" title="Auswählen">
-                            </div>
                             <img src="uploads/${filename}" alt="${filename}">
                             <span class="file-type-badge">${fileExtension.toUpperCase()}</span>
                         </div>
@@ -184,12 +176,6 @@ function loadImages(searchTerm = null) {
                 `;
                 
                 imageGrid.appendChild(card);
-                
-                // Checkbox-Event-Listener hinzufügen
-                const checkbox = card.querySelector('.image-select-checkbox');
-                if (checkbox) {
-                    checkbox.addEventListener('change', batchOperations.handleItemSelect);
-                }
                 
                 // Text laden, wenn vorhanden
                 if (!text) {
@@ -239,7 +225,6 @@ function searchFiles(searchTerm) {
             data.forEach(file => {
                 const card = document.createElement('div');
                 card.className = 'image-card search-highlight';
-                card.dataset.filename = file.filename; // Dateinamen als Datensatz speichern
                 
                 const fileExtension = file.filename.split('.').pop().toLowerCase();
                 const isPdf = fileExtension === 'pdf';
@@ -248,9 +233,6 @@ function searchFiles(searchTerm) {
                 if (isPdf) {
                     previewHTML = `
                         <div class="image-wrapper">
-                            <div class="image-select-wrapper">
-                                <input type="checkbox" class="image-select-checkbox" title="Auswählen">
-                            </div>
                             <div class="pdf-preview" id="pdf_${file.filename.replace(/\./g, '_')}">
                                 <div>PDF-Dokument wird geladen...</div>
                                 <canvas></canvas>
@@ -266,9 +248,6 @@ function searchFiles(searchTerm) {
                 } else {
                     previewHTML = `
                         <div class="image-wrapper">
-                            <div class="image-select-wrapper">
-                                <input type="checkbox" class="image-select-checkbox" title="Auswählen">
-                            </div>
                             <img src="uploads/${file.filename}" alt="${file.filename}">
                             <span class="file-type-badge">${fileExtension.toUpperCase()}</span>
                         </div>
@@ -289,12 +268,6 @@ function searchFiles(searchTerm) {
                 `;
                 
                 imageGrid.appendChild(card);
-                
-                // Checkbox-Event-Listener hinzufügen
-                const checkbox = card.querySelector('.image-select-checkbox');
-                if (checkbox) {
-                    checkbox.addEventListener('change', batchOperations.handleItemSelect);
-                }
                 
                 // PDF laden, wenn es sich um ein PDF handelt
                 if (isPdf) {
