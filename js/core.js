@@ -172,10 +172,6 @@ function loadImages(searchTerm = null) {
                 
                 card.innerHTML = `
                     ${previewHTML}
-                    <div class="image-actions">
-                        <button class="btn btn-info" onclick="printFile('${filename}')">Drucken</button>
-                        <button class="btn btn-danger" onclick="deleteImage('${filename}')">Löschen</button>
-                    </div>
                     <div class="progress-container">
                         <div class="progress-bar">0%</div>
                     </div>
@@ -276,17 +272,13 @@ function searchFiles(searchTerm) {
                 }
                 
                 card.innerHTML = `
-                    ${previewHTML}
-                    <div class="image-actions">
-                        <button class="btn btn-info" onclick="printFile('${file.filename}')">Drucken</button>
-                        <button class="btn btn-danger" onclick="deleteImage('${file.filename}')">Löschen</button>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar">0%</div>
-                    </div>
-                    <div class="loading">Text wird erkannt...</div>
-                    <div class="text-content hidden">${highlightText(file.text, searchTerm)}</div>
-                `;
+                ${previewHTML}
+                <div class="progress-container">
+                    <div class="progress-bar">0%</div>
+                </div>
+                <div class="loading">Text wird erkannt...</div>
+                <div class="text-content hidden">${highlightText(file.text, searchTerm)}</div>
+            `;
                 
                 imageGrid.appendChild(card);
                 

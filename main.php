@@ -19,20 +19,21 @@ $user = $_SESSION['user'];
         <!-- Externe Bibliotheken -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
         
-        <!-- CSS-Dateien -->
+           <!-- CSS-Dateien -->
+           <link rel="stylesheet" href="styles/header.css">
         <link rel="stylesheet" href="styles/main.css">
         <link rel="stylesheet" href="styles/layout.css">
         <link rel="stylesheet" href="styles/components.css">
         <link rel="stylesheet" href="styles/utils.css">
         <link rel="stylesheet" href="styles/batch.css">
-    </head>
+</head>
 <body>
     <header class="main-header">
         <div class="header-content">
             <h1>Datei Upload & Texterkennung</h1>
             <div class="user-info">
                 <span>Angemeldet als <strong><?php echo htmlspecialchars($user['name']); ?></strong></span>
-                <a href="auth/logout.php" class="btn btn-sm">Abmelden</a>
+                <a href="auth/logout.php" class="btn-sm">Abmelden</a>
             </div>
         </div>
     </header>
