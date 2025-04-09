@@ -1,0 +1,24 @@
+# Set the default document
+DirectoryIndex index.php
+
+# Basic protection for the auth directory
+<FilesMatch "^auth/(?!login\.php|logout\.php).*$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Add this to prevent directory listing
+Options -Indexes
+
+# Alternative approach to prevent PHP execution in upload directories
+# This uses FilesMatch with path patterns instead of Directory blocks
+<FilesMatch "^(uploads|texts)/.*\.php$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Block access to sensitive files
+<FilesMatch "^(\.htaccess|\.htpasswd|users\.json|tokens\.json)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>

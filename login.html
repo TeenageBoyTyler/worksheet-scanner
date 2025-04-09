@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Datei Upload & Texterkennung</title>
+    
+    <!-- CSS-Dateien -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/layout.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1>Datei Upload & Texterkennung</h1>
+            <h2>Anmeldung</h2>
+            
+            <div id="login-message" class="message hidden"></div>
+            
+            <form id="login-form" action="auth/login.php" method="post">
+                <div class="form-group">
+                    <label for="username">Benutzername:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Passwort:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <div class="form-group remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Angemeldet bleiben</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">Anmelden</button>
+            </form>
+            
+            <div class="login-info">
+                <p>Dies ist ein geschützter Bereich. Bei Fragen zur Zugangsberechtigung wenden Sie sich bitte an den Administrator.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/login.js"></script>
+</body>
+</html>
