@@ -1,5 +1,6 @@
 /**
  * ocr.js - Funktionen für die Texterkennung mit Space OCR API
+ * Mit korrigierter PDF-Verarbeitung
  */
 
 // Proxy-URL für Space OCR API
@@ -8,16 +9,19 @@ const OCR_SPACE_PROXY = 'ocr_space_proxy.php';
 // Debug-Logging aktivieren (auf false setzen für Produktion)
 const DEBUG = true;
 
+// Maximale Anzahl von PDF-Seiten für OCR (Space OCR API Limit)
+const MAX_PDF_PAGES = 3;
+
 // Debug-Funktion
 function logDebug(message, data) {
     if (DEBUG) {
-        console.log('[OCR] ' + message, data);
+        console.log('[OCR] ' + message, data || '');
     }
 }
 
 // Bild für OCR vorbereiten
 function prepareImageForOCR(imageUrl, callback) {
-    logDebug('Bereite Bild vor: ' + imageUrl);
+    logDebug('Bereite Bild vor', { url: imageUrl });
     
     const img = new Image();
     
@@ -72,9 +76,39 @@ function canvasToBase64(canvas) {
     }
 }
 
-// Texterkennung für ein Bild durchführen mit Space OCR API
+// Texterkennung mit Space OCR API
+function sendToOCR(base64Image) {
+    logDebug('Sende Bild an OCR API', { base64Length: base64Image.length });
+    
+    return fetch(OCR_SPACE_PROXY, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            base64Image: base64Image,
+            language: 'ger' // Deutsch
+        })
+    })
+    .then(response => {
+        logDebug('OCR API Antwort erhalten', { status: response.status });
+        if (!response.ok) {
+            throw new Error('HTTP-Fehler: ' + response.status);
+        }
+        return response.json();
+    })
+    .then(data => {
+        logDebug('OCR API Daten verarbeitet', data);
+        if (!data.success || !data.text) {
+            throw new Error(data.message || 'OCR fehlgeschlagen');
+        }
+        return data.text;
+    });
+}
+
+// Texterkennung für ein Bild durchführen
 function recognizeImageText(imageUrl, options, callback) {
-    logDebug('Starte Texterkennung für: ' + imageUrl);
+    logDebug('Starte Texterkennung für', { url: imageUrl });
     
     prepareImageForOCR(imageUrl, function(err, canvas) {
         if (err) {
@@ -87,53 +121,18 @@ function recognizeImageText(imageUrl, options, callback) {
             // Bild in Base64 konvertieren
             const base64Image = canvasToBase64(canvas);
             
-            logDebug('Sende Bild an OCR API', { base64Length: base64Image.length });
-            
-            // API-Anfrage an den Proxy senden
-            fetch(OCR_SPACE_PROXY, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    base64Image: base64Image,
-                    language: 'ger' // Deutsch
-                })
-            })
-            .then(response => {
-                logDebug('API-Antwort erhalten', { 
-                    status: response.status, 
-                    ok: response.ok 
-                });
-                
-                if (!response.ok) {
-                    throw new Error('HTTP-Fehler: ' + response.status);
-                }
-                
-                return response.json();
-            })
-            .then(data => {
-                logDebug('Verarbeite API-Daten', data);
-                
-                if (data.success && data.text) {
+            // OCR durchführen
+            sendToOCR(base64Image)
+                .then(text => {
                     // Text formatieren und zurückgeben
-                    try {
-                        const formattedText = formatText(data.text);
-                        logDebug('Text formatiert', { length: formattedText.length });
-                        callback(true, formattedText);
-                    } catch (error) {
-                        logDebug('Fehler bei Textformatierung', error);
-                        callback(false, 'Fehler bei Textformatierung: ' + error.message);
-                    }
-                } else {
-                    logDebug('Keine Textdaten in API-Antwort', data);
-                    callback(false, data.message || 'Texterkennung fehlgeschlagen');
-                }
-            })
-            .catch(error => {
-                logDebug('Fehler bei API-Anfrage', error);
-                callback(false, 'OCR-Fehler: ' + error.message);
-            });
+                    const formattedText = formatText(text);
+                    logDebug('Text erkannt und formatiert', { textLength: formattedText.length });
+                    callback(true, formattedText);
+                })
+                .catch(error => {
+                    logDebug('Fehler bei OCR-Anfrage', error);
+                    callback(false, 'OCR-Fehler: ' + error.message);
+                });
         } catch (error) {
             logDebug('Fehler im OCR-Prozess', error);
             callback(false, 'OCR-Fehler: ' + error.message);
@@ -141,99 +140,155 @@ function recognizeImageText(imageUrl, options, callback) {
     });
 }
 
-// PDF-Seite für OCR verarbeiten
-function processPDFPageForOCR(pdfDoc, pageNum, options, callback) {
-    logDebug('Verarbeite PDF-Seite', { pageNum: pageNum });
+// Neue Funktion zur PDF-Verarbeitung
+function processPDFforOCR(filename, progressCallback, resultCallback) {
+    logDebug('Verarbeite PDF', { filename });
     
-    try {
-        pdfDoc.getPage(pageNum).then(function(page) {
-            const viewport = page.getViewport({ scale: 1.5 });
+    // PDF laden
+    pdfjsLib.getDocument('uploads/' + filename).promise
+        .then(pdf => {
+            const numPages = pdf.numPages;
+            const pagesToProcess = Math.min(numPages, MAX_PDF_PAGES); // API-Limit beachten
+            let allText = '';
+            let processedPages = 0;
             
-            const canvas = document.createElement('canvas');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
+            logDebug('PDF geladen', { 
+                totalPages: numPages, 
+                pagesToProcess: pagesToProcess 
+            });
             
-            const renderContext = {
-                canvasContext: canvas.getContext('2d'),
-                viewport: viewport
-            };
-            
-            page.render(renderContext).promise.then(function() {
-                logDebug('PDF-Seite gerendert', { 
-                    pageNum: pageNum, 
-                    width: canvas.width, 
-                    height: canvas.height 
-                });
-                
-                // Seite als Base64 konvertieren
-                try {
-                    const base64Image = canvasToBase64(canvas);
-                    
-                    // API-Anfrage an den Proxy senden
-                    fetch(OCR_SPACE_PROXY, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            base64Image: base64Image,
-                            language: 'ger' // Deutsch
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success && data.text) {
-                            logDebug('Text für PDF-Seite erkannt', { 
-                                pageNum: pageNum, 
-                                textLength: data.text.length 
-                            });
-                            callback(null, data.text);
-                        } else {
-                            callback(new Error(data.message || 'Texterkennung fehlgeschlagen'), null);
-                        }
-                    })
-                    .catch(error => {
-                        logDebug('API-Fehler bei PDF-Seite', { 
-                            pageNum: pageNum, 
-                            error: error.message 
-                        });
-                        callback(error, null);
-                    });
-                } catch (error) {
-                    logDebug('Fehler bei Base64-Konvertierung', error);
-                    callback(error, null);
+            // Status aktualisieren
+            if (progressCallback) {
+                if (numPages > MAX_PDF_PAGES) {
+                    progressCallback(0, pagesToProcess, 
+                        `PDF mit ${numPages} Seiten gefunden, verarbeite die ersten ${MAX_PDF_PAGES} Seiten...`);
+                } else {
+                    progressCallback(0, pagesToProcess, 
+                        `PDF mit ${numPages} Seiten wird verarbeitet...`);
                 }
-            }).catch(function(error) {
-                logDebug('Fehler beim Rendern der PDF-Seite', { 
-                    pageNum: pageNum, 
-                    error: error.message 
+            }
+            
+            // Seiten sequentiell verarbeiten
+            function processNextPage(pageIndex) {
+                // Fertig, wenn alle Seiten verarbeitet sind
+                if (pageIndex > pagesToProcess) {
+                    logDebug('Alle PDF-Seiten verarbeitet', { textLength: allText.length });
+                    
+                    // Hinweis hinzufügen, wenn nicht alle Seiten verarbeitet wurden
+                    if (numPages > MAX_PDF_PAGES) {
+                        allText = `HINWEIS: Dieses PDF hat ${numPages} Seiten. Aufgrund von API-Beschränkungen wurden nur die ersten ${MAX_PDF_PAGES} Seiten verarbeitet.\n\n` + allText;
+                    }
+                    
+                    resultCallback(true, allText, 
+                        numPages > MAX_PDF_PAGES 
+                            ? `Text aus den ersten ${MAX_PDF_PAGES} von ${numPages} Seiten erkannt`
+                            : `Text aus ${numPages} Seiten erkannt`);
+                    return;
+                }
+                
+                // Status aktualisieren
+                if (progressCallback) {
+                    progressCallback(pageIndex, pagesToProcess, 
+                        `Verarbeite Seite ${pageIndex} von ${pagesToProcess}...`);
+                }
+                
+                logDebug('Verarbeite PDF-Seite', { page: pageIndex });
+                
+                // Seite rendern
+                pdf.getPage(pageIndex).then(page => {
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    const canvas = document.createElement('canvas');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    
+                    const renderContext = {
+                        canvasContext: canvas.getContext('2d'),
+                        viewport: viewport
+                    };
+                    
+                    // Seite rendern und dann als Bild verarbeiten
+                    page.render(renderContext).promise.then(() => {
+                        try {
+                            // In Base64 konvertieren
+                            const base64Image = canvasToBase64(canvas);
+                            
+                            // OCR für diese Seite durchführen
+                            sendToOCR(base64Image)
+                                .then(text => {
+                                    // Text dieser Seite verarbeiten
+                                    const pageText = formatText(text);
+                                    if (pageText && pageText.trim().length > 0) {
+                                        // Seitentext zum Gesamttext hinzufügen
+                                        allText += (allText ? '\n\n=== SEITE ' + pageIndex + ' ===\n\n' : '=== SEITE ' + pageIndex + ' ===\n\n') + pageText;
+                                    }
+                                    
+                                    // Nächste Seite verarbeiten
+                                    processedPages++;
+                                    setTimeout(() => processNextPage(pageIndex + 1), 100);
+                                })
+                                .catch(error => {
+                                    logDebug('Fehler bei OCR für Seite', {
+                                        page: pageIndex,
+                                        error: error.message
+                                    });
+                                    
+                                    // Trotz Fehler zur nächsten Seite gehen
+                                    processedPages++;
+                                    setTimeout(() => processNextPage(pageIndex + 1), 100);
+                                });
+                        } catch (error) {
+                            logDebug('Fehler bei der Seitenverarbeitung', {
+                                page: pageIndex,
+                                error: error.message
+                            });
+                            
+                            // Trotz Fehler zur nächsten Seite gehen
+                            processedPages++;
+                            setTimeout(() => processNextPage(pageIndex + 1), 100);
+                        }
+                    }).catch(error => {
+                        logDebug('Fehler beim Rendern der Seite', {
+                            page: pageIndex,
+                            error: error.message
+                        });
+                        
+                        // Trotz Fehler zur nächsten Seite gehen
+                        processedPages++;
+                        setTimeout(() => processNextPage(pageIndex + 1), 100);
+                    });
+                }).catch(error => {
+                    logDebug('Fehler beim Laden der Seite', {
+                        page: pageIndex,
+                        error: error.message
+                    });
+                    
+                    // Trotz Fehler zur nächsten Seite gehen
+                    processedPages++;
+                    setTimeout(() => processNextPage(pageIndex + 1), 100);
                 });
-                callback(error, null);
-            });
-        }).catch(function(error) {
-            logDebug('Fehler beim Laden der PDF-Seite', { 
-                pageNum: pageNum, 
-                error: error.message 
-            });
-            callback(error, null);
+            }
+            
+            // Starte mit der ersten Seite
+            processNextPage(1);
+        })
+        .catch(error => {
+            logDebug('Fehler beim Laden des PDFs', error);
+            resultCallback(false, '', 'PDF konnte nicht geladen werden: ' + error.message);
         });
-    } catch (error) {
-        logDebug('Allgemeiner Fehler bei PDF-Verarbeitung', error);
-        callback(error, null);
-    }
 }
 
 // Text formatieren für bessere Lesbarkeit
 function formatText(text) {
+    if (!text) return '';
+    
     logDebug('Formatiere Text', { length: text.length });
     
-    // Verwende die bestehende formatText Funktion aus utils.js, falls verfügbar
-    if (typeof window.formatText === 'function') {
+    // Externe Formatierungsfunktion verwenden, wenn verfügbar
+    if (window.formatText && typeof window.formatText === 'function') {
         try {
             return window.formatText(text);
         } catch (error) {
             logDebug('Fehler bei externer Textformatierung', error);
-            // Fallback zur einfachen Formatierung
             return text.trim();
         }
     }
@@ -244,19 +299,17 @@ function formatText(text) {
 
 // Automatische Texterkennung für hochgeladene Dateien
 function scanUploadedFile(filename, callback) {
-    logDebug('Starte Texterkennung für Datei', { filename: filename });
+    logDebug('Starte Texterkennung für Datei', { filename });
     
     const fileExtension = filename.split('.').pop().toLowerCase();
     const isPdf = fileExtension === 'pdf';
     
     if (isPdf) {
-        // Für PDFs: Alle Seiten verarbeiten mit Status-Updates
-        logDebug('Verarbeite PDF-Datei', { filename: filename });
-        
-        processMultipagePDF(
-            filename, 
-            {}, // Keine besonderen Optionen nötig
-            function(pageNum, totalPages, statusMessage) {
+        // Für PDFs: Neue PDF-Verarbeitungsmethode verwenden
+        processPDFforOCR(
+            filename,
+            // Status-Update-Callback
+            function(currentPage, totalPages, statusMessage) {
                 // Fortschritt aktualisieren
                 const uploadStatus = document.getElementById('uploadStatus');
                 const uploadProgress = document.getElementById('uploadProgress');
@@ -266,22 +319,23 @@ function scanUploadedFile(filename, callback) {
                 }
                 
                 if (uploadProgress) {
-                    const progress = Math.round((pageNum / totalPages) * 100);
+                    const progress = Math.round((currentPage / totalPages) * 100);
                     uploadProgress.style.width = progress + '%';
                     uploadProgress.textContent = progress + '%';
                 }
                 
                 logDebug('PDF-Fortschritt aktualisiert', { 
-                    pageNum: pageNum, 
-                    totalPages: totalPages, 
-                    progress: progress 
+                    currentPage,
+                    totalPages,
+                    progress: Math.round((currentPage / totalPages) * 100) + '%'
                 });
             },
+            // Ergebnis-Callback
             function(success, text, message) {
                 logDebug('PDF-Verarbeitung abgeschlossen', { 
-                    success: success, 
-                    textLength: text ? text.length : 0, 
-                    message: message 
+                    success, 
+                    textLength: text ? text.length : 0,
+                    message
                 });
                 
                 if (success && text) {
@@ -292,14 +346,14 @@ function scanUploadedFile(filename, callback) {
         );
     } else {
         // Für Bilder: Texterkennung durchführen
-        logDebug('Verarbeite Bilddatei', { filename: filename });
+        logDebug('Verarbeite Bilddatei', { filename });
         
         recognizeImageText(
             `uploads/${filename}`,
             {},
             function(success, result) {
                 logDebug('Bild-OCR abgeschlossen', { 
-                    success: success, 
+                    success, 
                     resultLength: result ? result.length : 0 
                 });
                 

@@ -5,6 +5,8 @@
 
 // Dokumentenfertig-Event-Handler 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM Content Loaded - Initializing application");
+    
     // PDF.js Worker initialisieren
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
     
@@ -23,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Upload-Formular-Handler
     document.getElementById('uploadForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        console.log("Upload form submitted");
         
         const formData = new FormData(this);
         const uploadProgressBox = document.getElementById('uploadProgressBox');
@@ -34,12 +37,15 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadProgress.textContent = '0%';
         uploadStatus.textContent = 'Datei wird hochgeladen...';
         
+        // Upload the file to the server
         fetch('upload.php', {
             method: 'POST',
             body: formData
         })
         .then(response => response.json())
         .then(data => {
+            console.log("Upload response:", data);
+            
             if (data.success) {
                 uploadProgress.style.width = '50%';
                 uploadProgress.textContent = '50%';
@@ -47,6 +53,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Nach erfolgreichem Upload automatisch Text scannen
                 scanUploadedFile(data.filename, function(success, message) {
+                    console.log("OCR result:", {success, message});
+                    
                     if (success) {
                         uploadProgress.style.width = '100%';
                         uploadProgress.textContent = '100%';
@@ -59,6 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }, 1000);
                     } else {
                         uploadStatus.textContent = 'Text konnte nicht erkannt werden: ' + message;
+                        
                         setTimeout(() => {
                             uploadProgressBox.style.display = 'none';
                             document.getElementById('uploadForm').reset();
@@ -71,9 +80,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Fehler beim Hochladen: ' + data.message);
             }
         })
-        .catch(() => {
+        .catch(error => {
+            console.error("Upload error:", error);
             uploadProgressBox.style.display = 'none';
-            // Fehler behandeln ohne Console-Ausgabe
             alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
         });
     });
@@ -81,6 +90,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Bilder vom Server laden
 function loadImages(searchTerm = null) {
+    console.log("Loading images", searchTerm ? { searchTerm } : "");
+    
     let url = 'get_images.php';
     if (searchTerm) {
         url += '?search=' + encodeURIComponent(searchTerm);
@@ -89,6 +100,8 @@ function loadImages(searchTerm = null) {
     fetch(url)
         .then(response => response.json())
         .then(data => {
+            console.log(`Loaded ${data.length} images`);
+            
             const imageGrid = document.getElementById('imageGrid');
             imageGrid.innerHTML = '';
             
@@ -183,16 +196,23 @@ function loadImages(searchTerm = null) {
                 document.getElementById('searchStatus').textContent = '';
             }
         })
-        .catch(() => {
-            // Fehler still behandeln ohne Console-Ausgabe
+        .catch(error => {
+            console.error("Error loading images:", error);
+            // Show error message
+            const imageGrid = document.getElementById('imageGrid');
+            imageGrid.innerHTML = '<p class="no-results">Fehler beim Laden der Bilder.</p>';
         });
 }
 
 // Suche in Dateien
 function searchFiles(searchTerm) {
+    console.log("Searching files for:", searchTerm);
+    
     fetch('search_text.php?search=' + encodeURIComponent(searchTerm))
         .then(response => response.json())
         .then(data => {
+            console.log(`Found ${data.length} search results`);
+            
             const imageGrid = document.getElementById('imageGrid');
             imageGrid.innerHTML = '';
             
@@ -258,7 +278,10 @@ function searchFiles(searchTerm) {
             document.getElementById('searchStatus').textContent = 
                 `${data.length} Ergebnis${data.length !== 1 ? 'se' : ''} für "${searchTerm}" gefunden`;
         })
-        .catch(() => {
-            // Fehler still behandeln ohne Console-Ausgabe
+        .catch(error => {
+            console.error("Search error:", error);
+            // Show error message
+            const imageGrid = document.getElementById('imageGrid');
+            imageGrid.innerHTML = '<p class="no-results">Fehler bei der Suche.</p>';
         });
 }
