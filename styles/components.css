@@ -125,30 +125,6 @@
     margin-right: 5px;
 }
 
-/* Styles für Tag-Auswahl im Upload-Formular */
-
-
-
-
-.tag-checkbox:hover {
-    background-color: #e0e0e0;
-}
-
-.tag-checkbox input {
-    margin-right: 5px;
-}
-
-/* Styles für Tag-Auswahl im Upload-Formular */
-
-
-.tag-checkbox:hover {
-    background-color: #e0e0e0;
-}
-
-.tag-checkbox input {
-    margin-right: 5px;
-}
-
 /* Styles für Tag-Anzeige */
 .file-tags {
     margin-top: 10px;
@@ -170,72 +146,4 @@
     color: #888;
     font-style: italic;
     font-size: 12px;
-}
-
-/* Tag Filter Styles */
-.search-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.search-inputs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.text-search {
-    flex: 1;
-    min-width: 200px;
-}
-
-.tag-filter {
-    flex: 1;
-    min-width: 200px;
-}
-
-.tag-filter select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.tag-filter small {
-    display: block;
-    margin-top: 3px;
-    font-size: 11px;
-    color: #666;
-}
-
-.search-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-/* Tag colors */
-.tag[data-tag="Deutsch"] {
-    background-color: #e3f2fd;
-    color: #1565c0;
-}
-
-.tag[data-tag="Mathematik"] {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-}
-
-.tag[data-tag="Sachunterricht"] {
-    background-color: #fff3e0;
-    color: #e65100;
-}
-
-.tag[data-tag="Englisch"] {
-    background-color: #f3e5f5;
-    color: #7b1fa2;
-}
-
-.tag[data-tag="Andere"] {
-    background-color: #eeeeee;
-    color: #616161;
 }

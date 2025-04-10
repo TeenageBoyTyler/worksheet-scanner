@@ -76,7 +76,6 @@ function loadTags(filename, tagsElement) {
                     data.metadata.tags.forEach(tag => {
                         const tagSpan = document.createElement('span');
                         tagSpan.className = 'tag';
-                        tagSpan.dataset.tag = tag; // Add data-tag attribute for styling
                         tagSpan.textContent = tag;
                         tagsElement.appendChild(tagSpan);
                     });
@@ -123,14 +122,6 @@ function printFile(filename) {
 function clearSearch() {
     document.getElementById('searchInput').value = '';
     document.getElementById('searchStatus').textContent = '';
-    
-    // Tag filter zurücksetzen
-    const tagFilter = document.getElementById('tagFilter');
-    if (tagFilter) {
-        for (let i = 0; i < tagFilter.options.length; i++) {
-            tagFilter.options[i].selected = false;
-        }
-    }
     
     // Batch-Auswahl zurücksetzen, wenn vorhanden
     if (typeof batchOperations !== 'undefined') {

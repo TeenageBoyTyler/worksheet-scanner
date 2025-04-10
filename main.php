@@ -39,46 +39,12 @@ $user = $_SESSION['user'];
     </header>
     
     <div class="upload-container">
-    <h2>Neue Datei hochladen</h2>
-    <form id="uploadForm" action="upload.php" method="post" enctype="multipart/form-data">
-        <div class="form-group">
-            <input type="file" name="imageFile" id="imageFile" accept="image/jpeg,image/png,image/gif,image/webp,application/pdf" required>
-            <small>Erlaubte Dateitypen: JPG, PNG, GIF, WebP, PDF</small>
-        </div>
-        
-        <div class="form-group">
-            <label>Tags:</label>
-            <div class="tags-selection">
-                <label class="tag-checkbox">
-                    <input type="checkbox" name="tags[]" value="Deutsch"> Deutsch
-                </label>
-                <label class="tag-checkbox">
-                    <input type="checkbox" name="tags[]" value="Mathematik"> Mathematik
-                </label>
-                <label class="tag-checkbox">
-                    <input type="checkbox" name="tags[]" value="Sachunterricht"> Sachunterricht
-                </label>
-                <label class="tag-checkbox">
-                    <input type="checkbox" name="tags[]" value="Englisch"> Englisch
-                </label>
-                <label class="tag-checkbox">
-                    <input type="checkbox" name="tags[]" value="Andere"> Andere
-                </label>
-            </div>
-        </div>
-        
-        <button type="submit" class="btn btn-primary">Hochladen</button>
-    </form>
-    <div id="uploadProgressBox" class="upload-progress-box">
-        <h3>Upload wird verarbeitet</h3>
-        <div>
-            <div class="progress-container" style="display: block;">
-                <div id="uploadProgress" class="progress-bar">0%</div>
-            </div>
-            <p id="uploadStatus">Datei wird hochgeladen...</p>
-        </div>
+        <h2>Neue Datei hochladen</h2>
+        <form id="uploadForm" action="upload.php" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <input type="file" name="imageFile" id="imageFile" accept="image/jpeg,image/png,image/gif,image/webp,application/pdf" required>
+        <small>Erlaubte Dateitypen: JPG, PNG, GIF, WebP, PDF</small>
     </div>
-</div>
     
     <div class="form-group">
         <label>Tags:</label>
@@ -115,30 +81,14 @@ $user = $_SESSION['user'];
     </div>
     
     <div class="search-container">
-    <h2>Textsuche</h2>
-    <form id="searchForm" class="search-form">
-        <div class="search-inputs">
-            <div class="text-search">
-                <input type="text" id="searchInput" placeholder="Suchbegriff eingeben..." required>
-            </div>
-            <div class="tag-filter">
-                <select id="tagFilter" multiple title="Nach Tags filtern (optional)">
-                    <option value="Deutsch">Deutsch</option>
-                    <option value="Mathematik">Mathematik</option>
-                    <option value="Sachunterricht">Sachunterricht</option>
-                    <option value="Englisch">Englisch</option>
-                    <option value="Andere">Andere</option>
-                </select>
-                <small>Optional: Tags auswählen, um die Suche einzuschränken (Strg+Klick für Mehrfachauswahl)</small>
-            </div>
-        </div>
-        <div class="search-buttons">
+        <h2>Textsuche</h2>
+        <form id="searchForm" class="search-form">
+            <input type="text" id="searchInput" placeholder="Suchbegriff eingeben..." required>
             <button type="submit" class="btn btn-primary">Suchen</button>
             <button type="button" class="btn" id="clearSearchBtn" onclick="clearSearch()">Alle Dateien anzeigen</button>
-        </div>
-    </form>
-    <div class="search-status" id="searchStatus"></div>
-</div>
+        </form>
+        <div class="search-status" id="searchStatus"></div>
+    </div>
     
     <!-- Batch-Operationen Panel -->
     <div id="batch-operations-panel" class="batch-operations-panel hidden">
