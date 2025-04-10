@@ -136,6 +136,7 @@
 .tag-checkbox {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     padding: 8px 12px;
     border-radius: 2px;
     cursor: pointer;
@@ -143,6 +144,9 @@
     transition: all 0.2s;
     font-size: 14px;
     text-align: center;
+    position: relative;
+    /* Wichtig: Damit das Label klickbar ist, auch wenn input versteckt ist */
+    z-index: 1;
 }
 
 /* Tag colors - diverse and visually distinct */
@@ -171,9 +175,19 @@
     color: #d84315;
 }
 
-/* Hide the actual checkbox */
-.tag-checkbox input {
-    display: none;
+/* Hide the actual checkbox but keep it accessible */
+.tag-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Make sure the span fills the entire area and is clickable */
+.tag-checkbox span {
+    display: inline-block;
+    width: 100%;
+    cursor: pointer;
 }
 
 /* Selected tag style */
@@ -181,13 +195,10 @@
     font-weight: 700;
 }
 
-.tag-checkbox:has(input:checked) {
-    transform: scale(1.05);
-}
-
-/* For browsers that don't support :has */
+/* For all browsers, use class-based approach instead of :has */
 .tag-checkbox.selected {
     transform: scale(1.05);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 /* Hover effect for tags */

@@ -11,24 +11,38 @@ document.addEventListener('DOMContentLoaded', function() {
  * Initialisiert alle Tag-Selektionen mit verbesserten Interaktionen
  */
 function initializeTagSelections() {
+    // Verbesserte Selektoren verwenden
     const tagLabels = document.querySelectorAll('.tag-checkbox');
+    console.log("Found tag labels:", tagLabels.length);
     
     tagLabels.forEach(label => {
-        // Click-Event für das Label
+        // Direktes Click-Event für das gesamte Label
         label.addEventListener('click', function(e) {
-            // Verhindern, dass das Checkbox-Klick-Event die Standardaktion auslöst
+            // Nur verhindern, wenn direkt auf das input geklickt wurde
+            // um Doppelauslösung zu vermeiden
             if (e.target.tagName.toLowerCase() === 'input') {
-                e.stopPropagation();
+                // Kein e.stopPropagation() hier, da wir das Event verarbeiten wollen
+                console.log("Direct checkbox click");
                 return;
             }
             
-            // Checkbox im Label finden und umschalten
+            console.log("Label or span click");
+            // Checkbox im Label finden
             const checkbox = this.querySelector('input[type="checkbox"]');
+            if (!checkbox) return;
+            
+            // Zustand umschalten
             checkbox.checked = !checkbox.checked;
             
             // Manuell ein change-Event auslösen
             const changeEvent = new Event('change', { bubbles: true });
             checkbox.dispatchEvent(changeEvent);
+            
+            // Visuelles Feedback direkt anwenden
+            updateTagAppearance(label, checkbox.checked);
+            
+            // Standard-Verhalten verhindern, um Doppelauslösung zu vermeiden
+            e.preventDefault();
         });
         
         // Change-Event für die Checkbox
@@ -36,14 +50,26 @@ function initializeTagSelections() {
         if (checkbox) {
             checkbox.addEventListener('change', function() {
                 // Visual feedback on selection
-                if (this.checked) {
-                    label.classList.add('selected');
-                } else {
-                    label.classList.remove('selected');
-                }
+                updateTagAppearance(label, this.checked);
             });
+            
+            // Initialen Zustand anwenden
+            updateTagAppearance(label, checkbox.checked);
         }
     });
+    
+    console.log("Tag selection initialization complete");
+}
+
+/**
+ * Aktualisiert das Erscheinungsbild eines Tag-Labels basierend auf dem Auswahlstatus
+ */
+function updateTagAppearance(label, isSelected) {
+    if (isSelected) {
+        label.classList.add('selected');
+    } else {
+        label.classList.remove('selected');
+    }
 }
 
 /**
@@ -63,6 +89,20 @@ function updateTagDisplay(containerId, tags) {
             const tagSpan = document.createElement('span');
             tagSpan.className = 'tag';
             tagSpan.textContent = tag;
+            
+            // Spezifische Klasse basierend auf dem Tag-Inhalt hinzufügen
+            if (tag === 'Deutsch') {
+                tagSpan.classList.add('tag-deutsch');
+            } else if (tag === 'Mathematik') {
+                tagSpan.classList.add('tag-mathematik');
+            } else if (tag === 'Sachunterricht') {
+                tagSpan.classList.add('tag-sachunterricht');
+            } else if (tag === 'Englisch') {
+                tagSpan.classList.add('tag-englisch');
+            } else if (tag === 'Andere') {
+                tagSpan.classList.add('tag-andere');
+            }
+            
             container.appendChild(tagSpan);
         });
     } else {
