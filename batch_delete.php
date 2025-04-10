@@ -72,6 +72,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ];
                 }
                 
+                // 3. Zugehörige Metadatendatei löschen, falls vorhanden
+                $metaFilename = 'meta/' . pathinfo($filename, PATHINFO_FILENAME) . '.json';
+                if (file_exists($metaFilename) && is_file($metaFilename)) {
+                    if (!unlink($metaFilename)) {
+                        // Nur als Warnung behandeln, nicht als Fehler
+                        if ($success && isset($response['deleted'][count($response['deleted']) - 1])) {
+                            if (isset($response['deleted'][count($response['deleted']) - 1]['warning'])) {
+                                $response['deleted'][count($response['deleted']) - 1]['warning'] .= ' Die zugehörige Metadatendatei konnte nicht gelöscht werden.';
+                            } else {
+                                $response['deleted'][count($response['deleted']) - 1]['warning'] = 'Die zugehörige Metadatendatei konnte nicht gelöscht werden.';
+                            }
+                        }
+                    }
+                }
+                
                 if ($success) {
                     $totalSuccess++;
                 }

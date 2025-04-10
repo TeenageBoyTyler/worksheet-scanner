@@ -29,6 +29,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['filename'])) {
             }
         }
         
+        // 3. Zugehörige Metadatendatei löschen, falls vorhanden
+        $metaFilename = 'meta/' . pathinfo($filename, PATHINFO_FILENAME) . '.json';
+        if (file_exists($metaFilename) && is_file($metaFilename)) {
+            if (!unlink($metaFilename)) {
+                // Nur als Warnung behandeln, nicht als Fehler
+                $response['message'] .= ' Hinweis: Die zugehörige Metadatendatei konnte nicht gelöscht werden.';
+            }
+        }
+        
         if ($success) {
             $response['success'] = true;
             $response['message'] = 'Datei(en) erfolgreich gelöscht';

@@ -76,7 +76,6 @@ function loadTags(filename, tagsElement) {
                     data.metadata.tags.forEach(tag => {
                         const tagSpan = document.createElement('span');
                         tagSpan.className = 'tag';
-                        tagSpan.dataset.tag = tag; // Add data-tag attribute for styling
                         tagSpan.textContent = tag;
                         tagsElement.appendChild(tagSpan);
                     });
