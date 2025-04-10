@@ -1,28 +1,28 @@
 /**
- * login.css - Stile für die Login-Seite
+ * login.css - Stile für die Login-Seite (Flat Design)
  */
 
  body {
-    background-color: #f5f5f5;
+    background-color: #f9f9f9;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     margin: 0;
     padding: 0;
+    font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
 }
 
 .login-container {
     width: 100%;
-    max-width: 450px;
+    max-width: 400px;
     padding: 20px;
 }
 
 .login-box {
     background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 30px;
+    border-radius: 2px;
+    padding: 40px;
 }
 
 .login-box h1 {
@@ -31,41 +31,43 @@
     margin-top: 0;
     margin-bottom: 10px;
     text-align: center;
+    font-weight: 500;
 }
 
 .login-box h2 {
     font-size: 18px;
     color: #666;
     margin-top: 0;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     text-align: center;
+    font-weight: 400;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
-    color: #555;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
 }
 
 .form-group input[type="text"],
 .form-group input[type="password"] {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 12px;
+    border: none;
+    background-color: #f5f5f5;
+    border-radius: 2px;
     font-size: 16px;
 }
 
 .form-group input[type="text"]:focus,
 .form-group input[type="password"]:focus {
     outline: none;
-    border-color: #4CAF50;
-    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+    background-color: #e0e0e0;
 }
 
 .remember-me {
@@ -75,6 +77,7 @@
 
 .remember-me input {
     margin-right: 8px;
+    accent-color: #4CAF50;
 }
 
 .remember-me label {
@@ -84,14 +87,16 @@
 
 .btn-full {
     width: 100%;
-    padding: 12px !important;
+    padding: 14px !important;
     font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .message {
-    padding: 10px;
-    border-radius: 4px;
-    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 2px;
+    margin-bottom: 25px;
     text-align: center;
 }
 
@@ -102,19 +107,17 @@
 .error-message {
     background-color: #ffebee;
     color: #c62828;
-    border: 1px solid #ffcdd2;
 }
 
 .success-message {
     background-color: #e8f5e9;
     color: #2e7d32;
-    border: 1px solid #c8e6c9;
 }
 
 .login-info {
-    margin-top: 25px;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #f5f5f5;
     font-size: 13px;
     color: #777;
     text-align: center;

@@ -19,8 +19,13 @@ $user = $_SESSION['user'];
         <!-- Externe Bibliotheken -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
         
-           <!-- CSS-Dateien -->
-           <link rel="stylesheet" href="styles/header.css">
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+        
+        <!-- CSS-Dateien -->
+        <link rel="stylesheet" href="styles/header.css">
         <link rel="stylesheet" href="styles/main.css">
         <link rel="stylesheet" href="styles/layout.css">
         <link rel="stylesheet" href="styles/components.css">
@@ -41,34 +46,39 @@ $user = $_SESSION['user'];
     <div class="upload-container">
         <h2>Neue Datei hochladen</h2>
         <form id="uploadForm" action="upload.php" method="post" enctype="multipart/form-data">
-    <div class="form-group">
-        <input type="file" name="imageFile" id="imageFile" accept="image/jpeg,image/png,image/gif,image/webp,application/pdf" required>
-        <small>Erlaubte Dateitypen: JPG, PNG, GIF, WebP, PDF</small>
-    </div>
-    
-    <div class="form-group">
-        <label>Tags:</label>
-        <div class="tags-selection">
-            <label class="tag-checkbox">
-                <input type="checkbox" name="tags[]" value="Deutsch"> Deutsch
-            </label>
-            <label class="tag-checkbox">
-                <input type="checkbox" name="tags[]" value="Mathematik"> Mathematik
-            </label>
-            <label class="tag-checkbox">
-                <input type="checkbox" name="tags[]" value="Sachunterricht"> Sachunterricht
-            </label>
-            <label class="tag-checkbox">
-                <input type="checkbox" name="tags[]" value="Englisch"> Englisch
-            </label>
-            <label class="tag-checkbox">
-                <input type="checkbox" name="tags[]" value="Andere"> Andere
-            </label>
-        </div>
-    </div>
-    
-    <button type="submit" class="btn btn-primary">Hochladen</button>
-</form>
+            <div class="form-group">
+                <input type="file" name="imageFile" id="imageFile" accept="image/jpeg,image/png,image/gif,image/webp,application/pdf" required>
+                <small>Erlaubte Dateitypen: JPG, PNG, GIF, WebP, PDF</small>
+            </div>
+            
+            <div class="form-group">
+                <label>Tags:</label>
+                <div class="tags-selection">
+                    <label class="tag-checkbox" for="tag-deutsch">
+                        <input type="checkbox" id="tag-deutsch" name="tags[]" value="Deutsch">
+                        <span>Deutsch</span>
+                    </label>
+                    <label class="tag-checkbox" for="tag-mathematik">
+                        <input type="checkbox" id="tag-mathematik" name="tags[]" value="Mathematik">
+                        <span>Mathematik</span>
+                    </label>
+                    <label class="tag-checkbox" for="tag-sachunterricht">
+                        <input type="checkbox" id="tag-sachunterricht" name="tags[]" value="Sachunterricht">
+                        <span>Sachunterricht</span>
+                    </label>
+                    <label class="tag-checkbox" for="tag-englisch">
+                        <input type="checkbox" id="tag-englisch" name="tags[]" value="Englisch">
+                        <span>Englisch</span>
+                    </label>
+                    <label class="tag-checkbox" for="tag-andere">
+                        <input type="checkbox" id="tag-andere" name="tags[]" value="Andere">
+                        <span>Andere</span>
+                    </label>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Hochladen</button>
+        </form>
         <div id="uploadProgressBox" class="upload-progress-box">
             <h3>Upload wird verarbeitet</h3>
             <div>
@@ -116,11 +126,12 @@ $user = $_SESSION['user'];
         <!-- Bilder werden hier dynamisch eingefügt -->
     </div>
 
-    <!-- Am Ende des body-Tags die eigenen JS-Dateien einbinden -->
-    <script src="js/utils.js"></script>
+<!-- Am Ende des body-Tags die eigenen JS-Dateien einbinden -->
+<script src="js/utils.js"></script>
     <script src="js/pdf-handler.js"></script>
     <script src="js/ocr.js"></script>
     <script src="js/batch-operations.js"></script>
+    <script src="js/tag-selection.js"></script>
     <script src="js/core.js"></script>
 
 </body>

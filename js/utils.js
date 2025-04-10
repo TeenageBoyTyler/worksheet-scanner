@@ -65,7 +65,7 @@ function loadText(filename, textElement) {
         });
 }
 
-// Tags für ein Bild laden
+// Tags für ein Bild laden - improved with class-based styling
 function loadTags(filename, tagsElement) {
     fetch('get_metadata.php?filename=' + encodeURIComponent(filename))
         .then(response => response.json())
@@ -77,6 +77,20 @@ function loadTags(filename, tagsElement) {
                         const tagSpan = document.createElement('span');
                         tagSpan.className = 'tag';
                         tagSpan.textContent = tag;
+                        
+                        // Add specific class based on tag content
+                        if (tag === 'Deutsch') {
+                            tagSpan.classList.add('tag-deutsch');
+                        } else if (tag === 'Mathematik') {
+                            tagSpan.classList.add('tag-mathematik');
+                        } else if (tag === 'Sachunterricht') {
+                            tagSpan.classList.add('tag-sachunterricht');
+                        } else if (tag === 'Englisch') {
+                            tagSpan.classList.add('tag-englisch');
+                        } else if (tag === 'Andere') {
+                            tagSpan.classList.add('tag-andere');
+                        }
+                        
                         tagsElement.appendChild(tagSpan);
                     });
                 } else {

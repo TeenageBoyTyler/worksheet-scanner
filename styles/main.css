@@ -1,30 +1,72 @@
 /**
- * main.css - Grundlegende Stile für die Bildupload-Anwendung
+ * main.css - Grundlegende Stile für die Bildupload-Anwendung (Flat Design)
  */
 
  body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #f5f5f5;
+    background-color: #f9f9f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 500;
+    color: #212121;
+    margin-top: 0;
 }
 
 h1 {
     color: #333;
     text-align: center;
+    font-size: 26px;
+}
+
+h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+    position: relative;
+    padding-bottom: 8px;
+}
+
+h2:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background-color: #4CAF50;
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
-input[type="file"], input[type="text"] {
-    display: block;
+input[type="file"] {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    background-color: #f5f5f5;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+input[type="text"] {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background-color: #f5f5f5;
+    border-radius: 2px;
+    font-size: 16px;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    background-color: #e0e0e0;
 }
 
 .hidden {
@@ -33,33 +75,37 @@ input[type="file"], input[type="text"] {
 
 .text-content {
     margin-top: 15px;
-    padding: 10px;
+    padding: 12px;
     background-color: #f9f9f9;
-    border-radius: 4px;
+    border-radius: 2px;
     font-size: 14px;
     max-height: 150px;
     overflow-y: auto;
     white-space: pre-wrap;
     line-height: 1.5;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Roboto Mono', 'Consolas', monospace;
 }
 
 .loading {
     display: none;
     text-align: center;
     margin-top: 10px;
+    color: #666;
 }
 
 .highlight {
-    background-color: yellow;
+    background-color: #FFF176;
     font-weight: bold;
+    padding: 0 2px;
 }
 
 .no-results {
     text-align: center;
-    padding: 20px;
+    padding: 30px;
     font-style: italic;
     color: #666;
+    background-color: #f5f5f5;
+    border-radius: 2px;
 }
 
 .search-status {

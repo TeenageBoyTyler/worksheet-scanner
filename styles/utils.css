@@ -1,5 +1,5 @@
 /**
- * utils.css - Hilfsklassen und Dienstprogramm-Stile
+ * utils.css - Hilfsklassen und Dienstprogramm-Stile (Flat Design)
  */
 
 /* Versteckte Elemente */
@@ -9,16 +9,19 @@
 
 /* Text-Hervorhebungen */
 .highlight {
-    background-color: yellow;
+    background-color: #FFF176;
     font-weight: bold;
+    padding: 0 2px;
 }
 
 /* Status-Anzeigen */
 .no-results {
     text-align: center;
-    padding: 20px;
+    padding: 30px;
     font-style: italic;
     color: #666;
+    background-color: #f5f5f5;
+    border-radius: 2px;
 }
 
 .search-status {
@@ -29,8 +32,8 @@
 
 /* Utility-Klassen */
 .search-highlight {
-    border: 3px solid #FFC107;
-    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+    border-left: 4px solid #FFC107;
+    background-color: #fffbee;
 }
 
 /* Abstand-Utilities */
@@ -46,6 +49,14 @@
     padding: 10px;
 }
 
+.m-0 {
+    margin: 0;
+}
+
+.p-0 {
+    padding: 0;
+}
+
 /* Flex-Utilities */
 .d-flex {
     display: flex;
@@ -55,8 +66,28 @@
     justify-content: space-between;
 }
 
+.justify-center {
+    justify-content: center;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
 .gap-10 {
     gap: 10px;
+}
+
+.gap-15 {
+    gap: 15px;
+}
+
+.gap-20 {
+    gap: 20px;
 }
 
 /* Text-Utilities */
@@ -69,5 +100,62 @@
 }
 
 .text-bold {
-    font-weight: bold;
+    font-weight: 500;
+}
+
+.text-extra-bold {
+    font-weight: 700;
+}
+
+/* Farben */
+.bg-light {
+    background-color: #f5f5f5;
+}
+
+.bg-white {
+    background-color: #ffffff;
+}
+
+.text-primary {
+    color: #4CAF50;
+}
+
+.text-danger {
+    color: #f44336;
+}
+
+.text-muted {
+    color: #757575;
+}
+
+/* Animation-Utilities */
+.transition-all {
+    transition: all 0.2s ease;
+}
+
+.hover-grow {
+    transition: transform 0.2s ease;
+}
+
+.hover-grow:hover {
+    transform: scale(1.02);
+}
+
+/* Responsive Utilities */
+@media (max-width: 768px) {
+    .d-mobile-block {
+        display: block !important;
+    }
+    
+    .d-mobile-none {
+        display: none !important;
+    }
+    
+    .w-mobile-100 {
+        width: 100% !important;
+    }
+    
+    .text-mobile-center {
+        text-align: center !important;
+    }
 }
