@@ -30,11 +30,11 @@
     cursor: pointer;
     height: 18px;
     width: 18px;
-    accent-color: #4CAF50;
+    accent-color: #607D8B; /* Changed to match the grayish primary color */
 }
 
 #selected-count-wrapper {
-    color: #666;
+    color: #607D8B; /* Changed to match the grayish primary color */
     font-size: 14px;
 }
 
@@ -57,12 +57,12 @@
     cursor: pointer;
     height: 18px;
     width: 18px;
-    accent-color: #4CAF50;
+    accent-color: #607D8B; /* Changed to match the grayish primary color */
 }
 
 /* Ausgewählte Karte */
 .image-card.selected {
-    border-left: 4px solid #4CAF50;
+    border-left: 4px solid #607D8B; /* Changed to match the grayish primary color */
     background-color: #f9f9f9;
 }
 
@@ -74,6 +74,6 @@
 #batch-progress-text {
     margin-top: 5px;
     font-size: 14px;
-    color: #666;
+    color: #607D8B; /* Changed to match the grayish primary color */
     text-align: center;
 }

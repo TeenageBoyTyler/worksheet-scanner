@@ -24,21 +24,21 @@
 }
 
 .btn-primary {
-    background-color: #4CAF50;
+    background-color: #607D8B; /* Grayish primary button */
     color: white;
 }
 
 .btn-primary:hover {
-    background-color: #43A047;
+    background-color: #455A64; /* Darker shade of gray */
 }
 
 .btn-danger {
-    background-color: #f44336;
+    background-color: #F44336;
     color: white;
 }
 
 .btn-danger:hover {
-    background-color: #E53935;
+    background-color: #D32F2F;
 }
 
 .btn-info {
@@ -47,16 +47,16 @@
 }
 
 .btn-info:hover {
-    background-color: #1E88E5;
+    background-color: #1976D2;
 }
 
 #clearSearchBtn {
-    background-color: #607D8B;
+    background-color: #9C27B0;
     color: white;
 }
 
 #clearSearchBtn:hover {
-    background-color: #546E7A;
+    background-color: #7B1FA2;
 }
 
 /* PDF-Viewer */
@@ -109,7 +109,7 @@
 .progress-bar {
     height: 20px;
     width: 0;
-    background-color: #4CAF50;
+    background-color: #607D8B;
     border-radius: 2px;
     text-align: center;
     line-height: 20px;
@@ -151,28 +151,28 @@
 
 /* Tag colors - diverse and visually distinct */
 .tag-checkbox[for="tag-deutsch"] {
-    background-color: #e3f2fd;
-    color: #1565c0;
+    background-color: #FFCDD2; /* Softer light red background */
+    color: #B71C1C; /* Deep red text */
 }
 
 .tag-checkbox[for="tag-mathematik"] {
-    background-color: #e8f5e9;
-    color: #2e7d32;
+    background-color: #E3F2FD; /* Light blue background */
+    color: #1976D2; /* Dark blue text */
 }
 
 .tag-checkbox[for="tag-sachunterricht"] {
-    background-color: #fffde7;
-    color: #fbc02d;
+    background-color: #E8F5E9; /* Light green background */
+    color: #2E7D32; /* Dark green text */
 }
 
 .tag-checkbox[for="tag-englisch"] {
-    background-color: #f3e5f5;
-    color: #7b1fa2;
+    background-color: #F3E5F5; /* Light purple background */
+    color: #9C27B0; /* Dark purple text */
 }
 
 .tag-checkbox[for="tag-andere"] {
-    background-color: #fbe9e7;
-    color: #d84315;
+    background-color: #FFF3E0; /* Soft light orange background */
+    color: #E65100; /* Deep orange text */
 }
 
 /* Hide the actual checkbox but keep it accessible */
@@ -198,7 +198,6 @@
 /* For all browsers, use class-based approach instead of :has */
 .tag-checkbox.selected {
     transform: scale(1.05);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 /* Hover effect for tags */
@@ -225,28 +224,28 @@
 
 /* Specific tag color classes */
 .tag-deutsch {
-    background-color: #e3f2fd;
-    color: #1565c0;
+    background-color: #FFCDD2;
+    color: #B71C1C;
 }
 
 .tag-mathematik {
-    background-color: #e8f5e9;
-    color: #2e7d32;
+    background-color: #E3F2FD;
+    color: #1976D2;
 }
 
 .tag-sachunterricht {
-    background-color: #fffde7;
-    color: #fbc02d;
+    background-color: #E8F5E9;
+    color: #2E7D32;
 }
 
 .tag-englisch {
-    background-color: #f3e5f5;
-    color: #7b1fa2;
+    background-color: #F3E5F5;
+    color: #9C27B0;
 }
 
 .tag-andere {
-    background-color: #fbe9e7;
-    color: #d84315;
+    background-color: #FFF3E0;
+    color: #E65100;
 }
 
 .no-tags {

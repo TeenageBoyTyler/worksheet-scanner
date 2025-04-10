@@ -3,7 +3,7 @@
  */
 
  .main-header {
-    background-color: #4CAF50;
+    background-color: #607D8B; /* Changed to match the grayish primary button color */
     margin-bottom: 30px;
     padding: 15px 0;
     color: white;
@@ -45,7 +45,7 @@
 .btn-sm {
     padding: 6px 12px;
     font-size: 13px;
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.2); /* Slightly more visible */
     color: white !important;
     border-radius: 2px;
     text-decoration: none !important;
@@ -58,6 +58,6 @@
 }
 
 .btn-sm:hover {
-    background-color: rgba(255, 255, 255, 0.25);
+    background-color: rgba(255, 255, 255, 0.3); /* Slightly more pronounced hover state */
     color: white !important;
 }

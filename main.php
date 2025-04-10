@@ -52,7 +52,7 @@ $user = $_SESSION['user'];
             </div>
             
             <div class="form-group">
-                <label>Tags:</label>
+            <label>Bitte wähle den passenden Tag aus</label>
                 <div class="tags-selection">
                     <label class="tag-checkbox" for="tag-deutsch">
                         <input type="checkbox" id="tag-deutsch" name="tags[]" value="Deutsch">
