@@ -14,7 +14,7 @@ $user = $_SESSION['user'];
         <!-- Meta-Tags und Titel -->
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Datei Upload & Texterkennung</title>
+        <title>Worksheet-Scanner</title>
         
         <!-- Externe Bibliotheken -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
@@ -35,7 +35,7 @@ $user = $_SESSION['user'];
 <body>
     <header class="main-header">
         <div class="header-content">
-            <h1>Datei Upload & Texterkennung</h1>
+            <h1>Worksheet-Scanner</h1>
             <div class="user-info">
                 <span>Angemeldet als <strong><?php echo htmlspecialchars($user['name']); ?></strong></span>
                 <a href="auth/logout.php" class="btn-sm">Abmelden</a>
@@ -121,7 +121,7 @@ $user = $_SESSION['user'];
         </div>
     </div>
     
-    <h2>Meine Dateien</h2>
+    
     <div class="image-grid" id="imageGrid">
         <!-- Bilder werden hier dynamisch eingefügt -->
     </div>

@@ -1,1 +1,0 @@
-I create a website that let's me upload images to my webspace via php. The uploaded images should be shown on the main page. Uploaded images are scanned by tesseract.js and the plain text is stored alongside the image on my server in different folders. /texts for .txt and /uploads for my images. Every image is deletable. If an image is deleted also the created .txt is deleted
