@@ -1,5 +1,5 @@
 /**
- * batch-operations.js - Funktionen für Batch-Operationen (Löschen, Drucken)
+ * batch-operations.js - Funktionen für Batch-Operationen (Löschen, Drucken, PDF-Download)
  */
 
 // Globaler Status für Batch-Operationen
@@ -14,6 +14,7 @@ const batchOperations = {
         // Event-Handler für Batch-Aktionen
         document.getElementById('batch-select-all').addEventListener('change', this.handleSelectAll);
         document.getElementById('batch-print-button').addEventListener('click', this.handleBatchPrint);
+        document.getElementById('batch-download-pdf-button').addEventListener('click', this.handleBatchDownloadPDF);
         document.getElementById('batch-delete-button').addEventListener('click', this.handleBatchDelete);
         
         // Batch-Panel initial ausblenden
@@ -109,6 +110,94 @@ const batchOperations = {
         } else {
             batchPanel.classList.add('hidden');
         }
+    },
+    
+    // Batch-PDF-Download von ausgewählten Elementen
+    handleBatchDownloadPDF: function() {
+        if (batchOperations.selectedItems.length === 0) {
+            alert('Bitte wählen Sie mindestens eine Datei zum Herunterladen aus.');
+            return;
+        }
+        
+        console.log('Erstelle PDF mit ausgewählten Dateien:', batchOperations.selectedItems);
+        
+        // Fortschrittsanzeige einblenden
+        const progressElement = document.getElementById('batch-progress');
+        const progressBar = document.getElementById('batch-progress-bar');
+        const progressText = document.getElementById('batch-progress-text');
+        
+        progressElement.classList.remove('hidden');
+        progressBar.style.width = '0%';
+        progressBar.textContent = '0%';
+        progressText.textContent = 'PDF wird erstellt...';
+        
+        // Anfrage an den Server senden, um PDF zu erstellen
+        fetch('generate_pdf.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                files: batchOperations.selectedItems
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Fortschritt aktualisieren
+            progressBar.style.width = '100%';
+            progressBar.textContent = '100%';
+            
+            if (data.success) {
+                progressText.textContent = data.message;
+                
+                // PDF automatisch herunterladen
+                const downloadLink = document.createElement('a');
+                downloadLink.href = data.pdfUrl;
+                downloadLink.download = data.pdfUrl.split('/').pop();
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                
+                setTimeout(() => {
+                    // Fortschrittsanzeige ausblenden
+                    progressElement.classList.add('hidden');
+                    
+                    // Erfolgsmeldung anzeigen, wenn es Fehler gab
+                    if (data.errorFiles && data.errorFiles.length > 0) {
+                        let errorMessage = 'Einige Dateien konnten nicht zum PDF hinzugefügt werden:\n\n';
+                        data.errorFiles.forEach(file => {
+                            errorMessage += `- ${file.filename}: ${file.reason}\n`;
+                        });
+                        alert(errorMessage);
+                    }
+                }, 1000);
+            } else {
+                progressText.textContent = data.message;
+                
+                setTimeout(() => {
+                    // Fortschrittsanzeige ausblenden
+                    progressElement.classList.add('hidden');
+                    
+                    // Fehlermeldung anzeigen
+                    alert(`Fehler beim Erstellen des PDFs: ${data.message}`);
+                }, 1000);
+            }
+        })
+        .catch(error => {
+            console.error('Fehler beim Erstellen des PDFs:', error);
+            
+            progressBar.style.width = '100%';
+            progressBar.textContent = '100%';
+            progressText.textContent = 'Fehler beim Erstellen des PDFs';
+            
+            setTimeout(() => {
+                // Fortschrittsanzeige ausblenden
+                progressElement.classList.add('hidden');
+                
+                // Fehlermeldung anzeigen
+                alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
+            }, 1000);
+        });
     },
     
     // Batch-Drucken von ausgewählten Elementen

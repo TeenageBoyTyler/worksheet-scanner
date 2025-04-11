@@ -137,24 +137,25 @@ $user = $_SESSION['user'];
     
     <!-- Batch-Operationen Panel -->
     <div id="batch-operations-panel" class="batch-operations-panel hidden">
-        <div class="batch-header">
-            <div class="batch-selection">
-                <input type="checkbox" id="batch-select-all" class="batch-checkbox">
-                <label for="batch-select-all">Alle auswählen</label>
-                <span id="selected-count-wrapper">(<span id="selected-count">0</span> ausgewählt)</span>
-            </div>
-            <div class="batch-actions">
-                <button id="batch-print-button" class="btn btn-info">Ausgewählte drucken</button>
-                <button id="batch-delete-button" class="btn btn-danger">Ausgewählte löschen</button>
-            </div>
+    <div class="batch-header">
+        <div class="batch-selection">
+            <input type="checkbox" id="batch-select-all" class="batch-checkbox">
+            <label for="batch-select-all">Alle auswählen</label>
+            <span id="selected-count-wrapper">(<span id="selected-count">0</span> ausgewählt)</span>
         </div>
-        <div id="batch-progress" class="batch-progress hidden">
-            <div class="progress-container">
-                <div id="batch-progress-bar" class="progress-bar">0%</div>
-            </div>
-            <p id="batch-progress-text">0/0 Dateien verarbeitet</p>
+        <div class="batch-actions">
+            <button id="batch-download-pdf-button" class="btn btn-success">Als PDF herunterladen</button>
+            <button id="batch-print-button" class="btn btn-info">Ausgewählte drucken</button>
+            <button id="batch-delete-button" class="btn btn-danger">Ausgewählte löschen</button>
         </div>
     </div>
+    <div id="batch-progress" class="batch-progress hidden">
+        <div class="progress-container">
+            <div id="batch-progress-bar" class="progress-bar">0%</div>
+        </div>
+        <p id="batch-progress-text">0/0 Dateien verarbeitet</p>
+    </div>
+</div>
     
     
     <div class="image-grid" id="imageGrid">

@@ -12,7 +12,7 @@ Options -Indexes
 
 # Alternative approach to prevent PHP execution in upload directories
 # This uses FilesMatch with path patterns instead of Directory blocks
-<FilesMatch "^(uploads|texts)/.*\.php$">
+<FilesMatch "^(uploads|texts|temp)/.*\.php$">
     Order Allow,Deny
     Deny from all
 </FilesMatch>
@@ -22,3 +22,8 @@ Options -Indexes
     Order Allow,Deny
     Deny from all
 </FilesMatch>
+
+# Set proper MIME type for PDF files
+<IfModule mod_mime.c>
+    AddType application/pdf .pdf
+</IfModule>

@@ -59,6 +59,35 @@
     background-color: #7B1FA2;
 }
 
+/*Download PDF*/
+.btn-success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #388E3C;
+}
+
+/* Add or update the batch actions styling */
+.batch-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+@media (max-width: 768px) {
+    .batch-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .batch-actions button {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+}
+
 /* PDF-Viewer */
 .image-card .pdf-preview {
     width: 100%;
