@@ -1,5 +1,5 @@
 /**
- * batch-operations.js - Funktionen für Batch-Operationen (Löschen, PDF-Download)
+ * batch-operations.js - Funktionen für Batch-Operationen (Löschen, Drucken, PDF-Download)
  */
 
 // Globaler Status für Batch-Operationen
@@ -13,6 +13,7 @@ const batchOperations = {
         
         // Event-Handler für Batch-Aktionen
         document.getElementById('batch-select-all').addEventListener('change', this.handleSelectAll);
+        document.getElementById('batch-print-button').addEventListener('click', this.handleBatchPrint);
         document.getElementById('batch-download-pdf-button').addEventListener('click', this.handleBatchDownloadPDF);
         document.getElementById('batch-delete-button').addEventListener('click', this.handleBatchDelete);
         
@@ -197,6 +198,88 @@ const batchOperations = {
                 alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
             }, 1000);
         });
+    },
+    
+    // Batch-Drucken von ausgewählten Elementen
+    handleBatchPrint: function() {
+        if (batchOperations.selectedItems.length === 0) {
+            alert('Bitte wählen Sie mindestens eine Datei zum Drucken aus.');
+            return;
+        }
+        
+        console.log('Drucke ausgewählte Dateien:', batchOperations.selectedItems);
+        
+        // Druckfenster erstellen
+        const printWin = window.open('', '_blank');
+        printWin.document.write('<html><head><title>Batch-Druck</title>');
+        printWin.document.write('<style>');
+        printWin.document.write(`
+            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+            .print-header { text-align: center; margin-bottom: 20px; }
+            .print-item { margin-bottom: 40px; page-break-after: always; }
+            .print-item:last-child { page-break-after: avoid; }
+            .print-item h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+            .print-item img { max-width: 100%; height: auto; }
+            .print-item .text-content { margin-top: 10px; border: 1px solid #eee; padding: 10px; background: #f9f9f9; }
+            @media print {
+                .print-item { page-break-after: always; }
+                .no-print { display: none; }
+            }
+        `);
+        printWin.document.write('</style></head><body>');
+        printWin.document.write('<div class="print-header">');
+        printWin.document.write('<h1>Batch-Druck: ' + batchOperations.selectedItems.length + ' Dateien</h1>');
+        printWin.document.write('<div class="no-print"><button onclick="window.print()">Drucken</button></div>');
+        printWin.document.write('</div>');
+        
+        // Für jede ausgewählte Datei
+        batchOperations.selectedItems.forEach(filename => {
+            const fileExtension = filename.split('.').pop().toLowerCase();
+            const isPdf = fileExtension === 'pdf';
+            
+            printWin.document.write('<div class="print-item">');
+            printWin.document.write('<h2>' + filename + '</h2>');
+            
+            // Bei PDFs nur einen Link anzeigen
+            if (isPdf) {
+                printWin.document.write('<p>PDF-Dokument: <a href="uploads/' + filename + '" target="_blank">' + filename + '</a></p>');
+                printWin.document.write('<p class="no-print">PDF-Dokumente müssen separat geöffnet werden.</p>');
+            } else {
+                // Bei Bildern das Bild direkt einbinden
+                printWin.document.write('<img src="uploads/' + filename + '" alt="' + filename + '">');
+            }
+            
+            // Text-Inhalt hinzufügen (asynchron geladen)
+            printWin.document.write('<div class="text-content" id="text_' + filename.replace(/\./g, '_') + '">Text wird geladen...</div>');
+            
+            printWin.document.write('</div>');
+        });
+        
+        printWin.document.write('</body></html>');
+        printWin.document.close();
+        
+        // Text für jede Datei laden
+        batchOperations.selectedItems.forEach(filename => {
+            const textElementId = 'text_' + filename.replace(/\./g, '_');
+            
+            // AJAX-Anfrage zum Laden des Textes
+            fetch('get_text.php?filename=' + encodeURIComponent(filename))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.text) {
+                        printWin.document.getElementById(textElementId).textContent = data.text;
+                    } else {
+                        printWin.document.getElementById(textElementId).textContent = 'Kein Text verfügbar';
+                    }
+                })
+                .catch(error => {
+                    console.error('Fehler beim Laden des Textes:', error);
+                    printWin.document.getElementById(textElementId).textContent = 'Fehler beim Laden des Textes';
+                });
+        });
+        
+        // Fokus auf das Druckfenster setzen
+        printWin.focus();
     },
     
     // Batch-Löschen von ausgewählten Elementen

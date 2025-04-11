@@ -135,8 +135,8 @@ $user = $_SESSION['user'];
         <div class="tag-filter-status" id="tagFilterStatus"></div>
     </div>
     
-    <!-- Batch-Operationen Panel -->
-    <div id="batch-operations-panel" class="batch-operations-panel hidden">
+<!-- Batch-Operationen Panel -->
+<div id="batch-operations-panel" class="batch-operations-panel hidden">
     <div class="batch-header">
         <div class="batch-selection">
             <input type="checkbox" id="batch-select-all" class="batch-checkbox">
@@ -145,7 +145,6 @@ $user = $_SESSION['user'];
         </div>
         <div class="batch-actions">
             <button id="batch-download-pdf-button" class="btn btn-success">Als PDF herunterladen</button>
-            <button id="batch-print-button" class="btn btn-info">Ausgewählte drucken</button>
             <button id="batch-delete-button" class="btn btn-danger">Ausgewählte löschen</button>
         </div>
     </div>
