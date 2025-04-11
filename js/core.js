@@ -17,6 +17,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('searchForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+        
+        // Wenn tag-filter.js geladen wurde, wird die Submit-Logik dort überschrieben
+        // Diese Funktion wird nur aufgerufen, wenn tag-filter.js nicht richtig geladen wurde
         if (searchTerm.length > 0) {
             searchFiles(searchTerm);
         }
@@ -70,7 +73,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         setTimeout(() => {
                             uploadProgressBox.style.display = 'none';
                             document.getElementById('uploadForm').reset();
-                            loadImages(); // Bilderliste aktualisieren
+                            
+                            // Aktuelle Ansicht aktualisieren, je nachdem ob Filter aktiv sind
+                            if (typeof tagFilter !== 'undefined' && tagFilter.isFiltering) {
+                                // Falls Tag-Filter aktiv ist
+                                tagFilter.applyFilter();
+                            } else {
+                                // Standard: Alle Bilder laden
+                                loadImages();
+                            }
                         }, 1000);
                     } else {
                         uploadStatus.textContent = 'Text konnte nicht erkannt werden: ' + message;
@@ -78,7 +89,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         setTimeout(() => {
                             uploadProgressBox.style.display = 'none';
                             document.getElementById('uploadForm').reset();
-                            loadImages(); // Bilderliste trotzdem aktualisieren
+                            
+                            // Aktuelle Ansicht aktualisieren, je nachdem ob Filter aktiv sind
+                            if (typeof tagFilter !== 'undefined' && tagFilter.isFiltering) {
+                                // Falls Tag-Filter aktiv ist
+                                tagFilter.applyFilter();
+                            } else {
+                                // Standard: Alle Bilder laden
+                                loadImages();
+                            }
                         }, 3000);
                     }
                 });
@@ -216,6 +235,11 @@ function loadImages(searchTerm = null) {
             } else {
                 document.getElementById('searchStatus').textContent = '';
             }
+            
+            // Tag-Filter-Status zurücksetzen, wenn keine Filterung aktiv ist
+            if (typeof tagFilter !== 'undefined' && !tagFilter.isFiltering) {
+                document.getElementById('tagFilterStatus').textContent = '';
+            }
         })
         .catch(error => {
             console.error("Error loading images:", error);
@@ -311,6 +335,11 @@ function searchFiles(searchTerm) {
             
             document.getElementById('searchStatus').textContent = 
                 `${data.length} Ergebnis${data.length !== 1 ? 'se' : ''} für "${searchTerm}" gefunden`;
+            
+            // Tag-Filter-Status zurücksetzen, wenn kein Tag-Filter aktiv ist
+            if (typeof tagFilter !== 'undefined' && !tagFilter.isFiltering) {
+                document.getElementById('tagFilterStatus').textContent = '';
+            }
         })
         .catch(error => {
             console.error("Search error:", error);

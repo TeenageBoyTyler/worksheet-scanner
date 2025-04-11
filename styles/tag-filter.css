@@ -1,0 +1,153 @@
+/**
+ * tag-filter.css - Styles for tag filtering functionality
+ */
+
+ .tag-filter-container {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f8f8;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+}
+
+.tag-filter-container h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #455A64;
+}
+
+.tag-filter {
+    margin-bottom: 15px;
+}
+
+.tag-filter-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.tag-filter-status {
+    margin-top: 10px;
+    font-style: italic;
+    color: #607D8B;
+    font-size: 14px;
+}
+
+/* Active tag filter indicator */
+.tag-filter-active {
+    background-color: #f0f7fb;
+    border-left: 4px solid #607D8B;
+    padding-left: 10px;
+}
+
+/* Combined filter indicator */
+.combined-filter-indicator {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #e8eaf6;
+    border-radius: 2px;
+    color: #3f51b5;
+    font-size: 14px;
+    display: none;
+}
+
+.combined-filter-indicator.active {
+    display: block;
+}
+
+/* Make tag filter checkboxes match the upload form */
+.tag-filter .tag-checkbox {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border-radius: 2px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s;
+    font-size: 14px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* Tag colors in filter - matching the upload form */
+.tag-filter .tag-checkbox[for="filter-tag-deutsch"] {
+    background-color: #FFCDD2;
+    color: #B71C1C;
+}
+
+.tag-filter .tag-checkbox[for="filter-tag-mathematik"] {
+    background-color: #E3F2FD;
+    color: #1976D2;
+}
+
+.tag-filter .tag-checkbox[for="filter-tag-sachunterricht"] {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+}
+
+.tag-filter .tag-checkbox[for="filter-tag-englisch"] {
+    background-color: #F3E5F5;
+    color: #9C27B0;
+}
+
+.tag-filter .tag-checkbox[for="filter-tag-andere"] {
+    background-color: #FFF3E0;
+    color: #E65100;
+}
+
+/* Selected state in filter */
+.tag-filter .tag-checkbox.selected {
+    transform: scale(1.05);
+}
+
+/* Hover effect for filter tags */
+.tag-filter .tag-checkbox:hover {
+    filter: brightness(95%);
+}
+
+/* Active filter status */
+.active-filter-status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f1f8e9;
+    border-radius: 2px;
+    align-items: center;
+}
+
+.filter-tag {
+    padding: 4px 8px;
+    border-radius: 2px;
+    font-size: 12px;
+    background-color: #607D8B;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+}
+
+.filter-tag .remove {
+    margin-left: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.filter-tag .remove:hover {
+    color: #ffcdd2;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .tag-filter-actions {
+        flex-direction: column;
+    }
+    
+    .tag-filter-actions button {
+        width: 100%;
+    }
+}

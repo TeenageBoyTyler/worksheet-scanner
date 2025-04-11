@@ -1,5 +1,6 @@
 /**
  * utils.js - Hilfsfunktionen für die Bildupload-Anwendung
+ * Simplified version - clearSearch function will be replaced by tag-filter.js
  */
 
 // Text mit Suchbegriff hervorheben
@@ -132,26 +133,9 @@ function printFile(filename) {
     }
 }
 
-// Suche zurücksetzen und alle Dateien anzeigen
+// Basic clearSearch implementation - will be replaced by tag-filter.js
 function clearSearch() {
-    document.getElementById('searchInput').value = '';
-    document.getElementById('searchStatus').textContent = '';
-    
-    // Batch-Auswahl zurücksetzen, wenn vorhanden
-    if (typeof batchOperations !== 'undefined') {
-        batchOperations.selectedItems = [];
-        batchOperations.selectAll = false;
-        
-        // Select All Checkbox zurücksetzen
-        const selectAllCheckbox = document.getElementById('batch-select-all');
-        if (selectAllCheckbox) {
-            selectAllCheckbox.checked = false;
-        }
-        
-        // Batch-Panel aktualisieren
-        batchOperations.updateBatchPanel();
-    }
-    
+    // Simply load all images - tag-filter.js will provide the full implementation
     loadImages();
 }
 
@@ -174,12 +158,28 @@ function deleteImage(filename) {
                     batchOperations.updateBatchPanel();
                 }
                 
-                // Suche aktualisieren, falls eine Suche aktiv ist
-                const searchInput = document.getElementById('searchInput');
-                if (searchInput.value.trim()) {
-                    searchFiles(searchInput.value.trim());
+                // Aktuelle Ansicht aktualisieren basierend auf Filter-Status
+                if (typeof tagFilter !== 'undefined') {
+                    if (tagFilter.isFiltering) {
+                        // Wenn Tag-Filter aktiv ist, Filter erneut anwenden
+                        tagFilter.applyFilter();
+                    } else if (tagFilter.currentSearchTerm) {
+                        // Wenn nur Textsuche aktiv ist
+                        searchFiles(tagFilter.currentSearchTerm);
+                    } else {
+                        // Standard: Alle Bilder laden
+                        loadImages();
+                    }
                 } else {
-                    loadImages(); // Bilderliste aktualisieren
+                    // Wenn tagFilter nicht definiert ist - Standardverhalten
+                    const searchInput = document.getElementById('searchInput');
+                    const searchTerm = searchInput.value.trim();
+                    
+                    if (searchTerm) {
+                        searchFiles(searchTerm);
+                    } else {
+                        loadImages();
+                    }
                 }
             } else {
                 alert('Fehler beim Löschen der Datei: ' + data.message);
@@ -187,6 +187,7 @@ function deleteImage(filename) {
         })
         .catch(() => {
             // Fehler still behandeln ohne Console-Ausgabe
+            alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
         });
     }
 }
