@@ -49,6 +49,10 @@ const tagEditor = {
             this.cancelEditing();
         }
         
+        // Klasse zum Container hinzufügen, um den Edit-Button zu verstecken
+        // Diese Klasse wird im CSS definiert, um alle Edit-Buttons zu verstecken
+        tagsContainer.classList.add('editing-active');
+        
         // Aktuellen Container merken
         this.activeElement = {
             filename: filename,
@@ -65,13 +69,23 @@ const tagEditor = {
         // Editor-Formular erstellen
         const formHTML = `
             <div class="tag-edit-form">
-                <div class="tag-edit-checkboxes">
-                    ${this.availableTags.map(tag => `
-                        <label class="tag-checkbox ${currentTags.includes(tag) ? 'selected' : ''}">
-                            <input type="checkbox" value="${tag}" ${currentTags.includes(tag) ? 'checked' : ''}>
-                            <span>${tag}</span>
-                        </label>
-                    `).join('')}
+                <div class="tag-edit-checkboxes tags-selection">
+                    ${this.availableTags.map(tag => {
+                        // Bestimme die spezifische Tag-Klasse basierend auf dem Tag-Inhalt
+                        let tagClass = '';
+                        if (tag === 'Deutsch') tagClass = 'tag-deutsch';
+                        else if (tag === 'Mathematik') tagClass = 'tag-mathematik';
+                        else if (tag === 'Sachunterricht') tagClass = 'tag-sachunterricht';
+                        else if (tag === 'Englisch') tagClass = 'tag-englisch';
+                        else if (tag === 'Andere') tagClass = 'tag-andere';
+                        
+                        return `
+                            <label class="tag-checkbox ${currentTags.includes(tag) ? 'selected' : ''}" for="edit-tag-${tag.toLowerCase()}-${filename.replace(/\./g, '-')}">
+                                <input type="checkbox" id="edit-tag-${tag.toLowerCase()}-${filename.replace(/\./g, '-')}" value="${tag}" ${currentTags.includes(tag) ? 'checked' : ''}>
+                                <span>${tag}</span>
+                            </label>
+                        `;
+                    }).join('')}
                 </div>
                 <div class="tag-edit-actions">
                     <button type="button" class="btn btn-primary btn-save-tags">Speichern</button>
@@ -117,6 +131,9 @@ const tagEditor = {
         }
         
         const filename = this.activeElement.filename;
+        
+        // Editing-Klasse entfernen
+        this.activeElement.container.classList.remove('editing-active');
         
         // Speichern-UI-Feedback
         this.activeElement.container.innerHTML = '<div class="loading-tags">Tags werden gespeichert...</div>';
@@ -170,6 +187,9 @@ const tagEditor = {
     // Bearbeitung abbrechen
     cancelEditing: function() {
         if (!this.activeElement) return;
+        
+        // Editing-Klasse entfernen
+        this.activeElement.container.classList.remove('editing-active');
         
         // Ursprünglichen Zustand wiederherstellen
         this.activeElement.container.innerHTML = this.activeElement.originalContent;

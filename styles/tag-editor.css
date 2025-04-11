@@ -11,12 +11,49 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Tag-Checkboxen für Bearbeitung */
+/* Tag-Checkboxen für Bearbeitung - Matchend mit Upload-Bereich */
 .tag-edit-checkboxes {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
     margin-bottom: 12px;
+}
+
+/* Individual tag styling for each tag in edit mode */
+.tag-edit-checkboxes .tag-checkbox[for^="edit-tag-deutsch"] {
+    background-color: #FFCDD2; /* Softer light red background */
+    color: #B71C1C; /* Deep red text */
+}
+
+.tag-edit-checkboxes .tag-checkbox[for^="edit-tag-mathematik"] {
+    background-color: #E3F2FD; /* Light blue background */
+    color: #1976D2; /* Dark blue text */
+}
+
+.tag-edit-checkboxes .tag-checkbox[for^="edit-tag-sachunterricht"] {
+    background-color: #E8F5E9; /* Light green background */
+    color: #2E7D32; /* Dark green text */
+}
+
+.tag-edit-checkboxes .tag-checkbox[for^="edit-tag-englisch"] {
+    background-color: #F3E5F5; /* Light purple background */
+    color: #9C27B0; /* Dark purple text */
+}
+
+.tag-edit-checkboxes .tag-checkbox[for^="edit-tag-andere"] {
+    background-color: #FFF3E0; /* Soft light orange background */
+    color: #E65100; /* Deep orange text */
+}
+
+/* Selected tag style in edit mode */
+.tag-edit-checkboxes .tag-checkbox.selected {
+    transform: scale(1.05);
+}
+
+.tag-edit-checkboxes .tag-checkbox input:checked + span {
+    font-weight: 700;
+}
+
+/* Hover effect for tags in edit mode */
+.tag-edit-checkboxes .tag-checkbox:hover {
+    filter: brightness(95%);
 }
 
 /* Aktionen für Tag-Bearbeitung */
@@ -55,6 +92,11 @@
 .tag-edit-button:hover {
     opacity: 1;
     background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Hide edit button when editing is active */
+.editing-active .tag-edit-button {
+    display: none !important;
 }
 
 /* Im Kontext der Tag-Anzeige */
