@@ -1,5 +1,6 @@
 /**
  * tag-selection.js - Verbessertes Handling für Tag-Selektionen
+ * Modified to only target upload form tags, not filter tags
  */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -11,9 +12,9 @@ document.addEventListener('DOMContentLoaded', function() {
  * Initialisiert alle Tag-Selektionen mit verbesserten Interaktionen
  */
 function initializeTagSelections() {
-    // Verbesserte Selektoren verwenden
-    const tagLabels = document.querySelectorAll('.tag-checkbox');
-    console.log("Found tag labels:", tagLabels.length);
+    // IMPORTANT: Only select tag-checkboxes in the upload form, not filter ones
+    const tagLabels = document.querySelectorAll('.upload-container .tag-checkbox');
+    console.log("Found upload form tag labels:", tagLabels.length);
     
     tagLabels.forEach(label => {
         // Direktes Click-Event für das gesamte Label
@@ -58,7 +59,7 @@ function initializeTagSelections() {
         }
     });
     
-    console.log("Tag selection initialization complete");
+    console.log("Upload form tag selection initialization complete");
 }
 
 /**

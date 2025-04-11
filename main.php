@@ -126,40 +126,35 @@ $user = $_SESSION['user'];
             <button type="button" class="btn" id="clearSearchBtn" onclick="clearSearch()">Alle Dateien anzeigen</button>
         </form>
         
-        <!-- Tag filter section -->
-        <div class="tag-filter-container">
-            <h3>Nach Tags filtern</h3>
-            <div class="tags-selection tag-filter">
-                <label class="tag-checkbox" for="filter-tag-deutsch">
-                    <input type="checkbox" id="filter-tag-deutsch" name="filter-tags[]" value="Deutsch">
-                    <span>Deutsch</span>
-                </label>
-                <label class="tag-checkbox" for="filter-tag-mathematik">
-                    <input type="checkbox" id="filter-tag-mathematik" name="filter-tags[]" value="Mathematik">
-                    <span>Mathematik</span>
-                </label>
-                <label class="tag-checkbox" for="filter-tag-sachunterricht">
-                    <input type="checkbox" id="filter-tag-sachunterricht" name="filter-tags[]" value="Sachunterricht">
-                    <span>Sachunterricht</span>
-                </label>
-                <label class="tag-checkbox" for="filter-tag-englisch">
-                    <input type="checkbox" id="filter-tag-englisch" name="filter-tags[]" value="Englisch">
-                    <span>Englisch</span>
-                </label>
-                <label class="tag-checkbox" for="filter-tag-andere">
-                    <input type="checkbox" id="filter-tag-andere" name="filter-tags[]" value="Andere">
-                    <span>Andere</span>
-                </label>
-            </div>
-            <div class="tag-filter-actions">
-                <button type="button" class="btn btn-primary" id="applyTagFilterBtn">Filter anwenden</button>
-                <button type="button" class="btn" id="clearTagFilterBtn">Filter zurücksetzen</button>
-            </div>
-        </div>
-        
-        <div class="search-status" id="searchStatus"></div>
-        <div class="tag-filter-status" id="tagFilterStatus"></div>
+<!-- Tag filter section with simplified UI - without reset button -->
+<div class="tag-filter-container">
+    <h3>Nach Tags filtern</h3>
+    <div class="tags-selection tag-filter">
+        <label class="tag-checkbox" for="filter-tag-deutsch">
+            <input type="checkbox" id="filter-tag-deutsch" name="filter-tags[]" value="Deutsch">
+            <span>Deutsch</span>
+        </label>
+        <label class="tag-checkbox" for="filter-tag-mathematik">
+            <input type="checkbox" id="filter-tag-mathematik" name="filter-tags[]" value="Mathematik">
+            <span>Mathematik</span>
+        </label>
+        <label class="tag-checkbox" for="filter-tag-sachunterricht">
+            <input type="checkbox" id="filter-tag-sachunterricht" name="filter-tags[]" value="Sachunterricht">
+            <span>Sachunterricht</span>
+        </label>
+        <label class="tag-checkbox" for="filter-tag-englisch">
+            <input type="checkbox" id="filter-tag-englisch" name="filter-tags[]" value="Englisch">
+            <span>Englisch</span>
+        </label>
+        <label class="tag-checkbox" for="filter-tag-andere">
+            <input type="checkbox" id="filter-tag-andere" name="filter-tags[]" value="Andere">
+            <span>Andere</span>
+        </label>
     </div>
+</div>
+
+<div class="search-status" id="searchStatus"></div>
+<div class="tag-filter-status" id="tagFilterStatus"></div>
     
     <!-- Batch-Operationen Panel -->
     <div id="batch-operations-panel" class="batch-operations-panel hidden">

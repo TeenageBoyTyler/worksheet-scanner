@@ -1,8 +1,10 @@
 /**
- * tag-filter.css - Styles for tag filtering functionality
+ * tag-filter.css - Improved styles for interactive tag filtering
+ * Exactly matched to upload tag styles, without reset button
  */
 
- .tag-filter-container {
+/* Tag filter container */
+.tag-filter-container {
     margin-top: 20px;
     padding: 15px;
     background-color: #f8f8f8;
@@ -18,47 +20,25 @@
     color: #455A64;
 }
 
-.tag-filter {
+/* Tag filter layout - match upload tags layout */
+.tag-filter-container .tag-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 5px;
     margin-bottom: 15px;
 }
 
-.tag-filter-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
+/* Hide the checkboxes visually but keep them accessible - exactly like in components.css */
+.tag-filter-container .tag-filter .tag-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
-.tag-filter-status {
-    margin-top: 10px;
-    font-style: italic;
-    color: #607D8B;
-    font-size: 14px;
-}
-
-/* Active tag filter indicator */
-.tag-filter-active {
-    background-color: #f0f7fb;
-    border-left: 4px solid #607D8B;
-    padding-left: 10px;
-}
-
-/* Combined filter indicator */
-.combined-filter-indicator {
-    margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #e8eaf6;
-    border-radius: 2px;
-    color: #3f51b5;
-    font-size: 14px;
-    display: none;
-}
-
-.combined-filter-indicator.active {
-    display: block;
-}
-
-/* Make tag filter checkboxes match the upload form */
-.tag-filter .tag-checkbox {
+/* Match the tag-checkbox style from components.css exactly */
+.tag-filter-container .tag-filter .tag-checkbox {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -73,81 +53,73 @@
     z-index: 1;
 }
 
-/* Tag colors in filter - matching the upload form */
-.tag-filter .tag-checkbox[for="filter-tag-deutsch"] {
-    background-color: #FFCDD2;
-    color: #B71C1C;
+/* Make sure the span fills the entire area and is clickable */
+.tag-filter-container .tag-filter .tag-checkbox span {
+    display: inline-block;
+    width: 100%;
+    cursor: pointer;
 }
 
-.tag-filter .tag-checkbox[for="filter-tag-mathematik"] {
-    background-color: #E3F2FD;
-    color: #1976D2;
-}
-
-.tag-filter .tag-checkbox[for="filter-tag-sachunterricht"] {
-    background-color: #E8F5E9;
-    color: #2E7D32;
-}
-
-.tag-filter .tag-checkbox[for="filter-tag-englisch"] {
-    background-color: #F3E5F5;
-    color: #9C27B0;
-}
-
-.tag-filter .tag-checkbox[for="filter-tag-andere"] {
-    background-color: #FFF3E0;
-    color: #E65100;
-}
-
-/* Selected state in filter */
-.tag-filter .tag-checkbox.selected {
-    transform: scale(1.05);
-}
-
-/* Hover effect for filter tags */
-.tag-filter .tag-checkbox:hover {
+/* Match the hover effect from components.css */
+.tag-filter-container .tag-filter .tag-checkbox:hover {
     filter: brightness(95%);
 }
 
-/* Active filter status */
-.active-filter-status {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-top: 15px;
-    padding: 10px;
-    background-color: #f1f8e9;
-    border-radius: 2px;
-    align-items: center;
+/* Selected state - match components.css */
+.tag-filter-container .tag-filter .tag-checkbox.selected {
+    transform: scale(1.05);
 }
 
-.filter-tag {
-    padding: 4px 8px;
-    border-radius: 2px;
-    font-size: 12px;
-    background-color: #607D8B;
-    color: white;
-    display: inline-flex;
-    align-items: center;
+/* Make sure the font weight matches when selected */
+.tag-filter-container .tag-filter .tag-checkbox input:checked + span {
+    font-weight: 700;
 }
 
-.filter-tag .remove {
-    margin-left: 5px;
-    cursor: pointer;
-    font-weight: bold;
+/* Tag color classes - match the upload form colors exactly */
+.tag-filter-container .tag-filter .tag-checkbox[for="filter-tag-deutsch"] {
+    background-color: #FFCDD2; /* Softer light red background */
+    color: #B71C1C; /* Deep red text */
 }
 
-.filter-tag .remove:hover {
-    color: #ffcdd2;
+.tag-filter-container .tag-filter .tag-checkbox[for="filter-tag-mathematik"] {
+    background-color: #E3F2FD; /* Light blue background */
+    color: #1976D2; /* Dark blue text */
+}
+
+.tag-filter-container .tag-filter .tag-checkbox[for="filter-tag-sachunterricht"] {
+    background-color: #E8F5E9; /* Light green background */
+    color: #2E7D32; /* Dark green text */
+}
+
+.tag-filter-container .tag-filter .tag-checkbox[for="filter-tag-englisch"] {
+    background-color: #F3E5F5; /* Light purple background */
+    color: #9C27B0; /* Dark purple text */
+}
+
+.tag-filter-container .tag-filter .tag-checkbox[for="filter-tag-andere"] {
+    background-color: #FFF3E0; /* Soft light orange background */
+    color: #E65100; /* Deep orange text */
+}
+
+/* Clearer indication of active filtering */
+.tag-filter-container.tag-filter-active {
+    background-color: #f8f8f8;
+}
+
+/* Status message */
+.tag-filter-status {
+    margin-top: 10px;
+    font-style: italic;
+    color: #607D8B;
+    font-size: 14px;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .tag-filter-actions {
-        flex-direction: column;
-    }
-    
-    .tag-filter-actions button {
-        width: 100%;
+    .tag-filter-container .tag-filter .tag-checkbox {
+        padding: 10px 15px;
+        font-size: 16px;
+        flex: 1;
+        min-width: calc(50% - 10px);
     }
 }
