@@ -70,10 +70,6 @@ input[type="text"]:focus {
     background-color: #e0e0e0;
 }
 
-.hidden {
-    display: none;
-}
-
 .text-content {
     margin-top: 15px;
     padding: 12px;
@@ -98,15 +94,6 @@ input[type="text"]:focus {
     background-color: #FFF176;
     font-weight: bold;
     padding: 0 2px;
-}
-
-.no-results {
-    text-align: center;
-    padding: 30px;
-    font-style: italic;
-    color: #666;
-    background-color: #f5f5f5;
-    border-radius: 2px;
 }
 
 .search-status {

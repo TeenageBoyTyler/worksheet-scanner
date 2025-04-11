@@ -31,8 +31,7 @@ $user = $_SESSION['user'];
         <link rel="stylesheet" href="styles/components.css">
         <link rel="stylesheet" href="styles/utils.css">
         <link rel="stylesheet" href="styles/batch.css">
-        <link rel="stylesheet" href="styles/tag-filter.css">
-        <link rel="stylesheet" href="styles/tag-editor.css">
+        <link rel="stylesheet" href="styles/tags.css">
         <link rel="stylesheet" href="styles/language-display.css">
         <link rel="stylesheet" href="styles/drag-drop-upload.css">
     </head>

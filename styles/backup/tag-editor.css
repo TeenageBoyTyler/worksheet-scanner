@@ -1,0 +1,131 @@
+/**
+ * tag-editor.css - Styles für die Tag-Bearbeitungsfunktion
+ */
+
+/* Tag-Editor Formular */
+.tag-edit-form {
+    margin-top: 5px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Tag-Checkboxen für Bearbeitung - Matchend mit Upload-Bereich */
+.tag-edit-checkboxes {
+    margin-bottom: 12px;
+}
+
+/* Individual tag styling for each tag in edit mode */
+.tag-edit-checkboxes .tag-checkbox[for^="edit-tag-deutsch"] {
+    background-color: #FFCDD2; /* Softer light red background */
+    color: #B71C1C; /* Deep red text */
+}
+
+.tag-edit-checkboxes .tag-checkbox[for^="edit-tag-mathematik"] {
+    background-color: #E3F2FD; /* Light blue background */
+    color: #1976D2; /* Dark blue text */
+}
+
+.tag-edit-checkboxes .tag-checkbox[for^="edit-tag-sachunterricht"] {
+    background-color: #E8F5E9; /* Light green background */
+    color: #2E7D32; /* Dark green text */
+}
+
+.tag-edit-checkboxes .tag-checkbox[for^="edit-tag-englisch"] {
+    background-color: #F3E5F5; /* Light purple background */
+    color: #9C27B0; /* Dark purple text */
+}
+
+.tag-edit-checkboxes .tag-checkbox[for^="edit-tag-andere"] {
+    background-color: #FFF3E0; /* Soft light orange background */
+    color: #E65100; /* Deep orange text */
+}
+
+/* Selected tag style in edit mode */
+.tag-edit-checkboxes .tag-checkbox.selected {
+    transform: scale(1.05);
+}
+
+.tag-edit-checkboxes .tag-checkbox input:checked + span {
+    font-weight: 700;
+}
+
+/* Hover effect for tags in edit mode */
+.tag-edit-checkboxes .tag-checkbox:hover {
+    filter: brightness(95%);
+}
+
+/* Aktionen für Tag-Bearbeitung */
+.tag-edit-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.tag-edit-actions .btn {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+/* Loading-Zustand für Tags */
+.loading-tags {
+    padding: 8px;
+    font-style: italic;
+    color: #757575;
+    text-align: center;
+}
+
+/* Tag-Bearbeitungs-Button */
+.tag-edit-button {
+    margin-left: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 5px;
+    border-radius: 2px;
+    vertical-align: middle;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.tag-edit-button:hover {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Hide edit button when editing is active */
+.editing-active .tag-edit-button {
+    display: none !important;
+}
+
+/* Im Kontext der Tag-Anzeige */
+.file-tags {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Edit-Icon Style */
+.edit-icon {
+    font-style: normal;
+    font-size: 16px;
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 768px) {
+    .tag-edit-checkboxes {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .tag-edit-actions {
+        flex-direction: column;
+    }
+    
+    .tag-edit-actions .btn {
+        width: 100%;
+    }
+}

@@ -1,0 +1,275 @@
+/**
+ * tags.css - Centralized styles for all tag-related elements in the application
+ * This file contains styles for tag selection, filtering, and editing functionality
+ */
+
+/* =====================
+   COMMON TAG STYLES 
+   ===================== */
+
+/* Base tag selection container */
+.tags-selection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+/* Base tag checkbox style - used in uploads, filters, and editor */
+.tag-checkbox {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border-radius: 2px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s;
+    font-size: 14px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* Hide the actual checkbox while keeping it accessible */
+.tag-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Make span fill entire area and be clickable */
+.tag-checkbox span {
+    display: inline-block;
+    width: 100%;
+    cursor: pointer;
+}
+
+/* Tag selection/hover effect */
+.tag-checkbox:hover {
+    filter: brightness(95%);
+}
+
+/* Selected tag style - common to all contexts */
+.tag-checkbox.selected {
+    transform: scale(1.05);
+}
+
+.tag-checkbox input:checked + span {
+    font-weight: 700;
+}
+
+/* =====================
+   TAG DISPLAY STYLES
+   ===================== */
+
+/* Container for tag display */
+.file-tags {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    position: relative; /* For absolute positioning of edit button */
+}
+
+/* Individual tag style */
+.tag {
+    padding: 4px 8px;
+    border-radius: 2px;
+    font-size: 12px;
+    display: inline-block;
+    background-color: #e0e0e0;
+    color: #616161;
+}
+
+/* Fallback when no tags */
+.no-tags {
+    color: #888;
+    font-style: italic;
+    font-size: 12px;
+}
+
+/* =====================
+   TAG COLOR VARIATIONS
+   ===================== */
+
+/* Upload form tag colors */
+.tag-checkbox[for="tag-deutsch"],
+.tag-checkbox[for^="edit-tag-deutsch"],
+.tag-filter-container .tag-filter .tag-checkbox[for="filter-tag-deutsch"],
+.tag-deutsch {
+    background-color: #FFCDD2; /* Softer light red background */
+    color: #B71C1C; /* Deep red text */
+}
+
+.tag-checkbox[for="tag-mathematik"],
+.tag-checkbox[for^="edit-tag-mathematik"],
+.tag-filter-container .tag-filter .tag-checkbox[for="filter-tag-mathematik"],
+.tag-mathematik {
+    background-color: #E3F2FD; /* Light blue background */
+    color: #1976D2; /* Dark blue text */
+}
+
+.tag-checkbox[for="tag-sachunterricht"],
+.tag-checkbox[for^="edit-tag-sachunterricht"],
+.tag-filter-container .tag-filter .tag-checkbox[for="filter-tag-sachunterricht"],
+.tag-sachunterricht {
+    background-color: #E8F5E9; /* Light green background */
+    color: #2E7D32; /* Dark green text */
+}
+
+.tag-checkbox[for="tag-englisch"],
+.tag-checkbox[for^="edit-tag-englisch"],
+.tag-filter-container .tag-filter .tag-checkbox[for="filter-tag-englisch"],
+.tag-englisch {
+    background-color: #F3E5F5; /* Light purple background */
+    color: #9C27B0; /* Dark purple text */
+}
+
+.tag-checkbox[for="tag-andere"],
+.tag-checkbox[for^="edit-tag-andere"],
+.tag-filter-container .tag-filter .tag-checkbox[for="filter-tag-andere"],
+.tag-andere {
+    background-color: #FFF3E0; /* Soft light orange background */
+    color: #E65100; /* Deep orange text */
+}
+
+/* =====================
+   TAG FILTER SPECIFIC
+   ===================== */
+
+/* Tag filter container */
+.tag-filter-container {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f8f8;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+}
+
+.tag-filter-container h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #455A64;
+}
+
+/* Tag filter layout */
+.tag-filter-container .tag-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+/* Visual indication of active filtering */
+.tag-filter-container.tag-filter-active {
+    background-color: #f8f8f8;
+}
+
+/* Status message for tag filtering */
+.tag-filter-status {
+    margin-top: 10px;
+    font-style: italic;
+    color: #607D8B;
+    font-size: 14px;
+}
+
+/* =====================
+   TAG EDITOR SPECIFIC
+   ===================== */
+
+/* Tag editor form */
+.tag-edit-form {
+    margin-top: 5px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Container for tag checkboxes in edit mode */
+.tag-edit-checkboxes {
+    margin-bottom: 12px;
+}
+
+/* Tag edit action buttons container */
+.tag-edit-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.tag-edit-actions .btn {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+/* Loading state for tag edits */
+.loading-tags {
+    padding: 8px;
+    font-style: italic;
+    color: #757575;
+    text-align: center;
+}
+
+/* Tag edit button */
+.tag-edit-button {
+    margin-left: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 5px;
+    border-radius: 2px;
+    vertical-align: middle;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.tag-edit-button:hover {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Hide edit button when editing is active */
+.editing-active .tag-edit-button {
+    display: none !important;
+}
+
+/* Edit icon styling */
+.edit-icon {
+    font-style: normal;
+    font-size: 16px;
+}
+
+/* =====================
+   RESPONSIVE ADJUSTMENTS
+   ===================== */
+
+@media (max-width: 768px) {
+    /* Filter tags get larger on mobile */
+    .tag-filter-container .tag-filter .tag-checkbox {
+        padding: 10px 15px;
+        font-size: 16px;
+        flex: 1;
+        min-width: calc(50% - 10px);
+    }
+    
+    /* Tag editor responsive styles */
+    .tag-edit-checkboxes {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .tag-edit-actions {
+        flex-direction: column;
+    }
+    
+    .tag-edit-actions .btn {
+        width: 100%;
+    }
+}
