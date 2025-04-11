@@ -1,7 +1,34 @@
 /**
  * tag-filter.js - Improved tag filtering with instant feedback
- * Without reset button functionality
+ * Compatible with simplified live search
  */
+
+// Global function to clear search and reset filters
+function clearSearch() {
+    console.log("Clearing search from global clearSearch function");
+    
+    // If tagFilter is initialized, use its reset method
+    if (typeof tagFilter !== 'undefined') {
+        tagFilter.resetEverything();
+    } else {
+        // Fallback if tagFilter isn't available
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        
+        // Reset search status
+        const searchStatus = document.getElementById('searchStatus');
+        if (searchStatus) {
+            searchStatus.textContent = '';
+        }
+        
+        // Load all images
+        if (typeof loadImages === 'function') {
+            loadImages();
+        }
+    }
+}
 
 // Global tag filter settings
 const tagFilter = {
@@ -46,15 +73,24 @@ const tagFilter = {
             }
         });
         
-        // Extend existing search form handler
+        // Get current search term from input (for live search integration)
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            this.currentSearchTerm = searchInput.value.trim().toLowerCase();
+            
+            // Listen for changes in the search input for live search integration
+            searchInput.addEventListener('input', (e) => {
+                this.currentSearchTerm = e.target.value.trim().toLowerCase();
+            });
+        }
+        
+        // Make sure the search form still exists and has an ID
         const searchForm = document.getElementById('searchForm');
         if (searchForm) {
-            // Remove previous handlers to prevent conflicts
-            const newSearchForm = searchForm.cloneNode(true);
-            searchForm.parentNode.replaceChild(newSearchForm, searchForm);
-            
-            // Add our handler
-            newSearchForm.addEventListener('submit', this.handleSearch.bind(this));
+            // Just to be safe, prevent any default form submission
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+            });
         }
         
         // Override clearSearch function
@@ -113,28 +149,6 @@ const tagFilter = {
         
         // Trigger filter update
         setTimeout(() => this.handleTagChange(), 10);
-    },
-    
-    // Handle search form submissions
-    handleSearch: function(e) {
-        e.preventDefault();
-        
-        const searchInput = document.getElementById('searchInput');
-        if (!searchInput) return;
-        
-        const searchTerm = searchInput.value.trim().toLowerCase();
-        
-        // Store search term
-        this.currentSearchTerm = searchTerm;
-        
-        // Perform search with appropriate method
-        if (searchTerm.length > 0) {
-            this.searchWithTags(searchTerm);
-        } else if (this.activeTags.length > 0) {
-            this.filterByTagsOnly();
-        } else {
-            this.resetEverything();
-        }
     },
     
     // Handle tag selection change
@@ -206,6 +220,12 @@ const tagFilter = {
         this.activeTags = this.collectActiveTags();
         this.isFiltering = this.activeTags.length > 0;
         
+        // Get current search term from input (for live search integration)
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            this.currentSearchTerm = searchInput.value.trim().toLowerCase();
+        }
+        
         // If we have active tags, filter by them
         if (this.isFiltering) {
             console.log('Filtering by tags (OR logic):', this.activeTags);
@@ -217,13 +237,18 @@ const tagFilter = {
                 this.filterByTagsOnly();
             }
         } else {
-            // No tags selected, show all images
-            loadImages();
-            
-            // Clear status
-            const tagFilterStatus = document.getElementById('tagFilterStatus');
-            if (tagFilterStatus) {
-                tagFilterStatus.textContent = '';
+            // Check if we have a search term only
+            if (this.currentSearchTerm) {
+                searchFiles(this.currentSearchTerm);
+            } else {
+                // No tags selected and no search term, show all images
+                loadImages();
+                
+                // Clear status
+                const tagFilterStatus = document.getElementById('tagFilterStatus');
+                if (tagFilterStatus) {
+                    tagFilterStatus.textContent = '';
+                }
             }
             
             // Reset processing flag

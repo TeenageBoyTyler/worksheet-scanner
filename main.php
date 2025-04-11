@@ -118,12 +118,11 @@ $user = $_SESSION['user'];
         </div>
     </div>
     
+
     <div class="search-container">
         <h2>Textsuche</h2>
         <form id="searchForm" class="search-form">
-            <input type="text" id="searchInput" placeholder="Suchbegriff eingeben...">
-            <button type="submit" class="btn btn-primary">Suchen</button>
-            <button type="button" class="btn" id="clearSearchBtn" onclick="clearSearch()">Alle Dateien anzeigen</button>
+            <input type="text" id="searchInput" placeholder="Suche nach Stichwörtern...">
         </form>
         
 <!-- Tag filter section with simplified UI - without reset button -->
@@ -155,6 +154,7 @@ $user = $_SESSION['user'];
 
 <div class="search-status" id="searchStatus"></div>
 <div class="tag-filter-status" id="tagFilterStatus"></div>
+
     
     <!-- Batch-Operationen Panel -->
     <div id="batch-operations-panel" class="batch-operations-panel hidden">

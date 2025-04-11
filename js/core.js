@@ -1,6 +1,7 @@
 /**
  * core.js - Kernfunktionen für die Bildupload-Anwendung
  * Diese Datei sollte als letzte geladen werden, da sie von den anderen JS-Dateien abhängt
+ * Updated with live search capability and simplified search
  */
 
 // Dokumentenfertig-Event-Handler 
@@ -13,16 +14,32 @@ document.addEventListener('DOMContentLoaded', function() {
     // Bilder laden
     loadImages();
     
-    // Suchformular-Handler
-    document.getElementById('searchForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
-        
-        // Wenn tag-filter.js geladen wurde, wird die Submit-Logik dort überschrieben
-        // Diese Funktion wird nur aufgerufen, wenn tag-filter.js nicht richtig geladen wurde
-        if (searchTerm.length > 0) {
-            searchFiles(searchTerm);
+    // Live search implementation
+    const searchInput = document.getElementById('searchInput');
+    let searchTimeout = null; // For debouncing
+    
+    // When user types in the search field
+    searchInput.addEventListener('input', function() {
+        // Clear any existing timeout
+        if (searchTimeout) {
+            clearTimeout(searchTimeout);
         }
+        
+        const searchTerm = searchInput.value.trim().toLowerCase();
+        
+        // Set a timeout to avoid searching on every keystroke
+        searchTimeout = setTimeout(() => {
+            if (searchTerm.length > 0) {
+                // Perform search after short delay
+                searchFiles(searchTerm);
+            } else {
+                // If search box is empty, show all images
+                loadImages();
+                
+                // Clear search status
+                document.getElementById('searchStatus').textContent = '';
+            }
+        }, 300); // 300ms delay for better performance
     });
     
     // Upload-Formular-Handler
