@@ -1,5 +1,5 @@
 <?php
-// ocr_space_proxy.php - Simplified proxy for Space OCR API with basic error handling
+// ocr_space_proxy.php - Enhanced proxy for Space OCR API with random key selection and language handling
 header('Content-Type: application/json');
 
 // Debug function - write messages to ocr_debug.log
@@ -44,15 +44,42 @@ if (!file_exists($configFile)) {
 $configContent = file_get_contents($configFile);
 $configData = json_decode($configContent, true);
 
-if (!$configData || !isset($configData['space_ocr_api_key']) || empty($configData['space_ocr_api_key'])) {
-    logDebug("API-Key nicht gefunden oder ungültig", ['config' => $configData]);
-    $response['message'] = 'API-Key nicht gefunden oder ungültig';
+// Check if we have valid configuration
+if (!$configData) {
+    logDebug("Ungültige Konfigurationsdatei", ['error' => json_last_error_msg()]);
+    $response['message'] = 'Ungültige Konfigurationsdatei';
     echo json_encode($response);
     exit;
 }
 
-$apiKey = $configData['space_ocr_api_key'];
-logDebug("API-Key gefunden", ['key_length' => strlen($apiKey)]);
+// Determine which API key to use
+// New format with multiple keys
+if (isset($configData['space_ocr_api_keys']) && is_array($configData['space_ocr_api_keys']) && !empty($configData['space_ocr_api_keys'])) {
+    // Get all available keys
+    $apiKeys = $configData['space_ocr_api_keys'];
+    
+    // Select a random key
+    $randomIndex = array_rand($apiKeys);
+    $apiKey = $apiKeys[$randomIndex];
+    
+    logDebug("API-Key ausgewählt", [
+        'key_length' => strlen($apiKey),
+        'key_index' => $randomIndex,
+        'total_keys' => count($apiKeys)
+    ]);
+} 
+// Fallback to old format with single key
+else if (isset($configData['space_ocr_api_key']) && !empty($configData['space_ocr_api_key'])) {
+    $apiKey = $configData['space_ocr_api_key'];
+    logDebug("Alter Konfigurationsformat gefunden - einzelner API-Key verwendet", ['key_length' => strlen($apiKey)]);
+} 
+// No valid keys found
+else {
+    logDebug("Keine gültigen API-Keys gefunden", ['config' => array_keys($configData)]);
+    $response['message'] = 'Keine gültigen API-Keys gefunden';
+    echo json_encode($response);
+    exit;
+}
 
 // Check for JSON data in the request body
 $jsonInput = null;
@@ -69,11 +96,24 @@ if (!empty($inputData)) {
 if ($jsonInput && isset($jsonInput['base64Image'])) {
     // Base64 image processing
     $base64Image = $jsonInput['base64Image'];
-    $language = isset($jsonInput['language']) ? $jsonInput['language'] : 'ger'; // Default to German
+    
+    // Get language from request or use default from config
+    $language = isset($jsonInput['language']) ? $jsonInput['language'] : null;
+    
+    // If language is not specified, use default from config
+    if (!$language && isset($configData['settings']['default_language'])) {
+        $language = $configData['settings']['default_language'];
+    }
+    
+    // Final fallback to German if no language is specified anywhere
+    if (!$language) {
+        $language = 'ger';
+    }
     
     logDebug("Verarbeite Base64-Bild", [
         'base64_length' => strlen($base64Image),
-        'language' => $language
+        'language' => $language,
+        'language_source' => isset($jsonInput['language']) ? 'request' : 'config_default'
     ]);
     
     // Send request to Space OCR API with Base64 data
@@ -98,7 +138,19 @@ if ($jsonInput && isset($jsonInput['base64Image'])) {
 } elseif (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
     // File upload processing
     $uploadedFile = $_FILES['image']['tmp_name'];
-    $language = isset($_POST['language']) ? $_POST['language'] : 'ger'; // Default to German
+    
+    // Get language from request or use default from config
+    $language = isset($_POST['language']) ? $_POST['language'] : null;
+    
+    // If language is not specified, use default from config
+    if (!$language && isset($configData['settings']['default_language'])) {
+        $language = $configData['settings']['default_language'];
+    }
+    
+    // Final fallback to German if no language is specified anywhere
+    if (!$language) {
+        $language = 'ger';
+    }
     
     logDebug("Verarbeite hochgeladene Datei", [
         'filename' => $_FILES['image']['name'],
@@ -151,6 +203,13 @@ if ($result === false) {
 
 curl_close($ch);
 
+// Log the API response details
+logDebug("API-Antwort erhalten", [
+    'http_code' => $httpCode,
+    'content_type' => $contentType,
+    'response_size' => strlen($result)
+]);
+
 // Process the API response
 $apiResponse = json_decode($result, true);
 
@@ -161,6 +220,9 @@ if ($apiResponse === null) {
     echo json_encode($response);
     exit;
 }
+
+// Log the parsed response
+logDebug("API-Antwort geparst", $apiResponse);
 
 // Check for API errors
 if ($httpCode !== 200 || (isset($apiResponse['ErrorMessage']) && !empty($apiResponse['ErrorMessage']))) {
@@ -202,7 +264,7 @@ if (empty($parsedText)) {
 $response['success'] = true;
 $response['text'] = $parsedText;
 if (isset($language)) {
-    $response['language'] = $language; // Just return the language that was used
+    $response['language'] = $language; // Return the language that was used
 }
 
 logDebug("Erfolgreiche Verarbeitung", [

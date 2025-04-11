@@ -1,3 +1,13 @@
 {
-    "space_ocr_api_key": "K86544787288957"
+    "space_ocr_api_keys": [
+        "K86544787288957",
+        "K89293992988957",
+        "K89702661688957",
+        "K84721270188957",
+        "K82212585688957"
+    ],
+    "settings": {
+        "default_language": "ger",
+        "key_rotation": "random"
+    }
 }
