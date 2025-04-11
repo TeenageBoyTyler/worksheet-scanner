@@ -1,5 +1,5 @@
 <?php
-// upload.php - Verarbeitet Bilduploads
+// upload.php - Verarbeitet Bilduploads mit Unterstützung für Einzeldateien und Bulk-Upload
 header('Content-Type: application/json');
 
 // Stellen Sie sicher, dass das Upload-Verzeichnis existiert

@@ -34,6 +34,7 @@ $user = $_SESSION['user'];
         <link rel="stylesheet" href="styles/tag-filter.css">
         <link rel="stylesheet" href="styles/tag-editor.css">
         <link rel="stylesheet" href="styles/language-display.css">
+        <link rel="stylesheet" href="styles/drag-drop-upload.css">
     </head>
 <body>
     <header class="main-header">
@@ -48,10 +49,27 @@ $user = $_SESSION['user'];
     
     <div class="upload-container">
         <h2>Neue Datei hochladen</h2>
+        
         <form id="uploadForm" action="upload.php" method="post" enctype="multipart/form-data">
+            <!-- Hidden file input -->
             <div class="form-group">
-                <input type="file" name="imageFile" id="imageFile" accept="image/jpeg,image/png,image/gif,image/webp,application/pdf" required>
+                <input type="file" name="imageFile" id="imageFile" accept="image/jpeg,image/png,image/gif,image/webp,application/pdf" class="hidden" required>
                 <small>Erlaubte Dateitypen: JPG, PNG, GIF, WebP, PDF</small>
+            </div>
+            
+            <!-- Drag and Drop Upload Zone -->
+            <div id="upload-zone" class="upload-zone">
+                <div class="upload-zone-content">
+                    <div class="upload-icon">⬆️</div>
+                    <h3 class="upload-text">Dateien hier ablegen</h3>
+                    <p class="upload-text-sub">oder mehrere Dateien auswählen</p>
+                    
+                    <div class="upload-or">oder</div>
+                    
+                    <div class="file-input-wrapper">
+                        <span class="file-input-button">Dateien auswählen</span>
+                    </div>
+                </div>
             </div>
             
             <div class="form-group">
@@ -78,6 +96,13 @@ $user = $_SESSION['user'];
                         <span>Andere</span>
                     </label>
                 </div>
+            </div>
+            
+            <!-- Bulk upload info will be added dynamically via JavaScript -->
+            <div id="bulk-upload-info" class="bulk-upload-info" style="display: none;">
+                <p>Selected <span id="bulk-file-count">0</span> files for upload</p>
+                <p class="bulk-tag-notice">The selected tags will be applied to all files in this batch.</p>
+                <div id="file-previews" class="file-previews"></div>
             </div>
             
             <button type="submit" class="btn btn-primary">Hochladen</button>
@@ -168,6 +193,7 @@ $user = $_SESSION['user'];
     <script src="js/batch-operations.js"></script>
     <script src="js/tag-selection.js"></script>
     <script src="js/tag-filter.js"></script>
+    <script src="js/drag-drop-upload.js"></script>
     <script src="js/core.js"></script>
     <script src="js/tag-editor.js"></script>
 </body>
