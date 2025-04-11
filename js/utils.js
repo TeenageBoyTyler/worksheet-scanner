@@ -66,7 +66,9 @@ function loadText(filename, textElement) {
         });
 }
 
-// Tags für ein Bild laden - improved with class-based styling
+// This function should replace the existing loadTags function in utils.js
+
+// Tags für ein Bild laden - improved with class-based styling and edit button
 function loadTags(filename, tagsElement) {
     fetch('get_metadata.php?filename=' + encodeURIComponent(filename))
         .then(response => response.json())
@@ -94,15 +96,35 @@ function loadTags(filename, tagsElement) {
                         
                         tagsElement.appendChild(tagSpan);
                     });
+                    
+                    // Add edit button to the tags container (if tagEditor is available)
+                    if (typeof tagEditor !== 'undefined') {
+                        tagEditor.addEditButton(tagsElement);
+                    }
                 } else {
                     tagsElement.innerHTML = '<span class="no-tags">Keine Tags</span>';
+                    
+                    // Add edit button even when there are no tags
+                    if (typeof tagEditor !== 'undefined') {
+                        tagEditor.addEditButton(tagsElement);
+                    }
                 }
             } else {
                 tagsElement.innerHTML = '<span class="no-tags">Keine Tags</span>';
+                
+                // Add edit button even when metadata is not available
+                if (typeof tagEditor !== 'undefined') {
+                    tagEditor.addEditButton(tagsElement);
+                }
             }
         })
         .catch(() => {
             tagsElement.innerHTML = '<span class="no-tags">Keine Tags</span>';
+            
+            // Add edit button even in case of an error
+            if (typeof tagEditor !== 'undefined') {
+                tagEditor.addEditButton(tagsElement);
+            }
         });
 }
 

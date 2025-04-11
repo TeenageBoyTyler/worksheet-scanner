@@ -32,6 +32,7 @@ $user = $_SESSION['user'];
         <link rel="stylesheet" href="styles/utils.css">
         <link rel="stylesheet" href="styles/batch.css">
         <link rel="stylesheet" href="styles/tag-filter.css">
+        <link rel="stylesheet" href="styles/tag-editor.css">
 </head>
 <body>
     <header class="main-header">
@@ -168,6 +169,7 @@ $user = $_SESSION['user'];
 <script src="js/tag-selection.js"></script>
 <script src="js/tag-filter.js"></script>
 <script src="js/core.js"></script>
+<script src="js/tag-editor.js"></script>
 
 </body>
 </html>

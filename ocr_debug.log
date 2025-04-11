@@ -1,0 +1,320 @@
+[2025-04-11 10:17:13] Neue OCR-Anfrage empfangen
+Daten: {
+    "method": "POST",
+    "content_type": "application\/json"
+}
+--------------------
+[2025-04-11 10:17:13] API-Key gefunden
+Daten: {
+    "key_length": 15
+}
+--------------------
+[2025-04-11 10:17:13] JSON-Eingabe empfangen
+Daten: {
+    "valid_json": true,
+    "has_base64Image": true
+}
+--------------------
+[2025-04-11 10:17:13] Verarbeite Base64-Bild
+Daten: {
+    "base64_length": 105672,
+    "language": "ger"
+}
+--------------------
+[2025-04-11 10:17:13] Sende Anfrage an OCR.space API
+--------------------
+[2025-04-11 10:17:14] API-Antwort erhalten
+Daten: {
+    "http_code": 200,
+    "content_type": "application\/json; charset=utf-8",
+    "response_size": 773
+}
+--------------------
+[2025-04-11 10:17:14] API-Antwort geparst
+Daten: {
+    "ParsedResults": [
+        {
+            "TextOverlay": {
+                "Lines": [],
+                "HasOverlay": false,
+                "Message": "Text overlay is not provided as it is not requested"
+            },
+            "TextOrientation": "0",
+            "FileParseExitCode": 1,
+            "ParsedText": "Grundschulk\u00f6nig\nEinzahl - Mehrzahl 3\nWir \u00fcben die Mehrzahl von Tieren!\nein Hund\neine Maus\n- zwei _\n- zwei\nein Vogel\n-\nzwei\nein L\u00f6we\n- zwei\nein Tiger\n- zwei\neine Kuh\n- zwei\nein Pferd\n- zwei\nein Elefant - zwei\nein Reh\n- zwei\nein Schaf\n- zwei\nein Frosch\n- zwei\neine Schlange - zwei\nein Fisch\n- zwei\nein Biber\n- zwei\nein Adler\n- zwei\nwww.grundschuikoenig.de",
+            "ErrorMessage": "",
+            "ErrorDetails": ""
+        }
+    ],
+    "OCRExitCode": 1,
+    "IsErroredOnProcessing": false,
+    "ProcessingTimeInMilliseconds": "953",
+    "SearchablePDFURL": "Searchable PDF not generated as it was not requested."
+}
+--------------------
+[2025-04-11 10:17:14] Text extrahiert
+Daten: {
+    "text_length": 356
+}
+--------------------
+[2025-04-11 10:17:14] Erfolgreiche Verarbeitung
+Daten: {
+    "text_length": 356
+}
+--------------------
+[2025-04-11 10:17:23] Neue OCR-Anfrage empfangen
+Daten: {
+    "method": "POST",
+    "content_type": "application\/json"
+}
+--------------------
+[2025-04-11 10:17:23] API-Key gefunden
+Daten: {
+    "key_length": 15
+}
+--------------------
+[2025-04-11 10:17:23] JSON-Eingabe empfangen
+Daten: {
+    "valid_json": true,
+    "has_base64Image": true
+}
+--------------------
+[2025-04-11 10:17:23] Verarbeite Base64-Bild
+Daten: {
+    "base64_length": 142072,
+    "language": "ger"
+}
+--------------------
+[2025-04-11 10:17:23] Sende Anfrage an OCR.space API
+--------------------
+[2025-04-11 10:17:24] API-Antwort erhalten
+Daten: {
+    "http_code": 200,
+    "content_type": "application\/json; charset=utf-8",
+    "response_size": 543
+}
+--------------------
+[2025-04-11 10:17:24] API-Antwort geparst
+Daten: {
+    "ParsedResults": [
+        {
+            "TextOverlay": {
+                "Lines": [],
+                "HasOverlay": false,
+                "Message": "Text overlay is not provided as it is not requested"
+            },
+            "TextOrientation": "0",
+            "FileParseExitCode": 1,
+            "ParsedText": "10 THINGS THAT REQUIRE ZERO TALENT:\nBEING ON TIME\nWORK ETHIC\nEFFORT\nBODY LANGUAGE\nENERGY\nATTITUDE\nPASSION\nBEING COACHABLE\nDOING EXTRA\nBEING PREPARED",
+            "ErrorMessage": "",
+            "ErrorDetails": ""
+        }
+    ],
+    "OCRExitCode": 1,
+    "IsErroredOnProcessing": false,
+    "ProcessingTimeInMilliseconds": "625",
+    "SearchablePDFURL": "Searchable PDF not generated as it was not requested."
+}
+--------------------
+[2025-04-11 10:17:24] Text extrahiert
+Daten: {
+    "text_length": 148
+}
+--------------------
+[2025-04-11 10:17:24] Erfolgreiche Verarbeitung
+Daten: {
+    "text_length": 148
+}
+--------------------
+[2025-04-11 10:18:04] Neue OCR-Anfrage empfangen
+Daten: {
+    "method": "POST",
+    "content_type": "application\/json"
+}
+--------------------
+[2025-04-11 10:18:04] API-Key gefunden
+Daten: {
+    "key_length": 15
+}
+--------------------
+[2025-04-11 10:18:04] JSON-Eingabe empfangen
+Daten: {
+    "valid_json": true,
+    "has_base64Image": true
+}
+--------------------
+[2025-04-11 10:18:04] Verarbeite Base64-Bild
+Daten: {
+    "base64_length": 105672,
+    "language": "ger"
+}
+--------------------
+[2025-04-11 10:18:04] Sende Anfrage an OCR.space API
+--------------------
+[2025-04-11 10:18:05] API-Antwort erhalten
+Daten: {
+    "http_code": 200,
+    "content_type": "application\/json; charset=utf-8",
+    "response_size": 773
+}
+--------------------
+[2025-04-11 10:18:05] API-Antwort geparst
+Daten: {
+    "ParsedResults": [
+        {
+            "TextOverlay": {
+                "Lines": [],
+                "HasOverlay": false,
+                "Message": "Text overlay is not provided as it is not requested"
+            },
+            "TextOrientation": "0",
+            "FileParseExitCode": 1,
+            "ParsedText": "Grundschulk\u00f6nig\nEinzahl - Mehrzahl 3\nWir \u00fcben die Mehrzahl von Tieren!\nein Hund\neine Maus\n- zwei _\n- zwei\nein Vogel\n-\nzwei\nein L\u00f6we\n- zwei\nein Tiger\n- zwei\neine Kuh\n- zwei\nein Pferd\n- zwei\nein Elefant - zwei\nein Reh\n- zwei\nein Schaf\n- zwei\nein Frosch\n- zwei\neine Schlange - zwei\nein Fisch\n- zwei\nein Biber\n- zwei\nein Adler\n- zwei\nwww.grundschuikoenig.de",
+            "ErrorMessage": "",
+            "ErrorDetails": ""
+        }
+    ],
+    "OCRExitCode": 1,
+    "IsErroredOnProcessing": false,
+    "ProcessingTimeInMilliseconds": "953",
+    "SearchablePDFURL": "Searchable PDF not generated as it was not requested."
+}
+--------------------
+[2025-04-11 10:18:05] Text extrahiert
+Daten: {
+    "text_length": 356
+}
+--------------------
+[2025-04-11 10:18:05] Erfolgreiche Verarbeitung
+Daten: {
+    "text_length": 356
+}
+--------------------
+[2025-04-11 10:50:20] Neue OCR-Anfrage empfangen
+Daten: {
+    "method": "POST",
+    "content_type": "application\/json"
+}
+--------------------
+[2025-04-11 10:50:20] API-Key gefunden
+Daten: {
+    "key_length": 15
+}
+--------------------
+[2025-04-11 10:50:20] JSON-Eingabe empfangen
+Daten: {
+    "valid_json": true,
+    "has_base64Image": true
+}
+--------------------
+[2025-04-11 10:50:20] Verarbeite Base64-Bild
+Daten: {
+    "base64_length": 246680,
+    "language": "ger"
+}
+--------------------
+[2025-04-11 10:50:20] Sende Anfrage an OCR.space API
+--------------------
+[2025-04-11 10:50:22] API-Antwort erhalten
+Daten: {
+    "http_code": 200,
+    "content_type": "application\/json; charset=utf-8",
+    "response_size": 1552
+}
+--------------------
+[2025-04-11 10:50:22] API-Antwort geparst
+Daten: {
+    "ParsedResults": [
+        {
+            "TextOverlay": {
+                "Lines": [],
+                "HasOverlay": false,
+                "Message": "Text overlay is not provided as it is not requested"
+            },
+            "TextOrientation": "0",
+            "FileParseExitCode": 1,
+            "ParsedText": "Arbeitsblatt f\u00fcr das Fach Deutsch\nKlasse 2\nLeseproben\nLERN WOLF. AT\nLese dir den Text 3-mal durch. Dann decke den Text zu und\nbeantworte die Fragen in ganzen S\u00e4tzen!\nViele Deutsche verbringen ihre Ferien am Mittelmeer. In\nden zwei Wochen Urlaub erwartet sie in Italien gro\u00dfe\nHitze. Bei Radtouren und Spazierg\u00e4ngen schwitzten\nEltern und Kinder. Aber beim Schwimmen im Meer\nk\u00f6nnen sie sich abk\u00fchlen und das Eis in der Strandbar\nschmeckt dann besonders gut. In den k\u00fchlen Wellen zu\nschwimmen und zu tauchen sind tolle Erlebnisse. Freitags\nfahren viele Urlauber \u00fcber den Brennerpass zur\u00fcck nach\nDeutschland. Zuhause kann man auch sch\u00f6ne Ferien\nverbringen.\nWo verbringen viele Deutsche Ihre Ferien?\nWie lange machen Sie Urlaub?\nWas kann man im Urlaub alles unternehmen? (Nenne 4!)\nWann fahren viele Urlauber zur\u00fcck nach Deutschland?\nDu kannst auch Zuhause tolle Ferien haben. Was kannst du unternehmen?\nWeitere anspruchsvolle Leseproben f\u00fcr das Fach Deutsch in der zweiten Klasse findest Du auf unserer\nPartnerseite www.CATLUX.de. Dort gibt es ausf\u00fchrliche Musterl\u00f6sungen, Proben, Lernzielkontrollen,\nSeite 1 von 2\nDokument Nr. 1180a",
+            "ErrorMessage": "",
+            "ErrorDetails": ""
+        }
+    ],
+    "OCRExitCode": 1,
+    "IsErroredOnProcessing": false,
+    "ProcessingTimeInMilliseconds": "1250",
+    "SearchablePDFURL": "Searchable PDF not generated as it was not requested."
+}
+--------------------
+[2025-04-11 10:50:22] Text extrahiert
+Daten: {
+    "text_length": 1142
+}
+--------------------
+[2025-04-11 10:50:22] Erfolgreiche Verarbeitung
+Daten: {
+    "text_length": 1142
+}
+--------------------
+[2025-04-11 10:50:22] Neue OCR-Anfrage empfangen
+Daten: {
+    "method": "POST",
+    "content_type": "application\/json"
+}
+--------------------
+[2025-04-11 10:50:22] API-Key gefunden
+Daten: {
+    "key_length": 15
+}
+--------------------
+[2025-04-11 10:50:22] JSON-Eingabe empfangen
+Daten: {
+    "valid_json": true,
+    "has_base64Image": true
+}
+--------------------
+[2025-04-11 10:50:22] Verarbeite Base64-Bild
+Daten: {
+    "base64_length": 280064,
+    "language": "ger"
+}
+--------------------
+[2025-04-11 10:50:22] Sende Anfrage an OCR.space API
+--------------------
+[2025-04-11 10:50:24] API-Antwort erhalten
+Daten: {
+    "http_code": 200,
+    "content_type": "application\/json; charset=utf-8",
+    "response_size": 1815
+}
+--------------------
+[2025-04-11 10:50:24] API-Antwort geparst
+Daten: {
+    "ParsedResults": [
+        {
+            "TextOverlay": {
+                "Lines": [],
+                "HasOverlay": false,
+                "Message": "Text overlay is not provided as it is not requested"
+            },
+            "TextOrientation": "0",
+            "FileParseExitCode": 1,
+            "ParsedText": "L\u00f6sung:\nSie verbringen ihre Ferien in Italien am Mittelmeer.\nSie machen 2 Wochen Urlaub.\nMan kann Radtouren und Spazierg\u00e4nge machen und schwimmen\nund tauchen.\nSie fahren freitags zur\u00fcck nach Deutschland.\nIndividuell: Ich gehe in das Freibad und treffe mich mit meinen\nFreunden.\nHat euch das Bearbeiten der Kurz-Leseprobe gefallen????\nWir bieten 50 St\u00fcck dieser Kurz-Leseproben an.\n\u2022 Mit dem LERNWOLF-Konzept schnell Lesen, Schreiben und Verstehen \u00fcben\n\u2022 50 ideal aufeinander abgestimmte Dokumente f\u00fcr die Lernziele der 2. Klasse\n\u2022 Doppelter Lernerfolg - gleichzeitig an Themen und Lerninhalten des\nSachkundeunterrichts ausgerichtet\n\u2022 Nur f\u00fcr begrenzte Zeit: \u20ac 14,95\nLERN WOLFAT*\nStartseite\nDeutsch-\nMathe ~\nhier\ni Impressum\ni Datenschutz\n\u00a9 Kontakt\nQ Suche\nbestellen\nJetzt NEU: Deutsch Kurzleseproben\n+ weitere Informationen\nlernwolf.at\nGratis\u00fcbungsbl\u00e4tter\neinfaches Lernen\nsicherer \u00dcbertritt\nbequeme Downloads\nSie sind hier: lernwolf.at \u203a Kostenlose \u00dcbungsbl\u00e4tter & Arbeitsbl\u00e4uter fur die Schule\nLERN WOLFAT\nWeitere anspruchsvolle Leseproben f\u00fcr das Fach Deutsch in der zweiten Klasse findest Du auf unserer\nPartnerseite www.CATLUX.de. Dort gibt es ausf\u00fchrliche Musterl\u00f6sungen, Proben, Lernzielkontrollen,\nSchulaufgaben und Klassenarbeiten f\u00fcr alle Schularten, Klassen und F\u00e4cher, passend zum aktuellen Lehrplan.\nSeite 2 von 2\nDokument Nr. 1180a\nLERN MOLF. AT",
+            "ErrorMessage": "",
+            "ErrorDetails": ""
+        }
+    ],
+    "OCRExitCode": 1,
+    "IsErroredOnProcessing": false,
+    "ProcessingTimeInMilliseconds": "1578",
+    "SearchablePDFURL": "Searchable PDF not generated as it was not requested."
+}
+--------------------
+[2025-04-11 10:50:24] Text extrahiert
+Daten: {
+    "text_length": 1390
+}
+--------------------
+[2025-04-11 10:50:24] Erfolgreiche Verarbeitung
+Daten: {
+    "text_length": 1390
+}
+--------------------
