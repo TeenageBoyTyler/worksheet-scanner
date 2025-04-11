@@ -1,0 +1,41 @@
+/**
+ * language-display.css - Styles for displaying the detected language
+ */
+
+.language-indicator {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 5px;
+    padding: 3px 6px;
+    background-color: #f0f0f0;
+    border-radius: 2px;
+    font-size: 12px;
+    color: #555;
+}
+
+.language-indicator .language-flag {
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+/* Language specific styles */
+.language-ger .language-flag::before {
+    content: "🇩🇪";
+}
+
+.language-eng .language-flag::before {
+    content: "🇬🇧";
+}
+
+.language-fre .language-flag::before {
+    content: "🇫🇷";
+}
+
+.language-spa .language-flag::before {
+    content: "🇪🇸";
+}
+
+/* Default for unknown languages */
+.language-unknown .language-flag::before {
+    content: "🌐";
+}

@@ -33,7 +33,8 @@ $user = $_SESSION['user'];
         <link rel="stylesheet" href="styles/batch.css">
         <link rel="stylesheet" href="styles/tag-filter.css">
         <link rel="stylesheet" href="styles/tag-editor.css">
-</head>
+        <link rel="stylesheet" href="styles/language-display.css">
+    </head>
 <body>
     <header class="main-header">
         <div class="header-content">
@@ -54,7 +55,7 @@ $user = $_SESSION['user'];
             </div>
             
             <div class="form-group">
-            <label>Bitte wähle den passenden Tag aus</label>
+                <label>Bitte wähle den passenden Tag aus</label>
                 <div class="tags-selection">
                     <label class="tag-checkbox" for="tag-deutsch">
                         <input type="checkbox" id="tag-deutsch" name="tags[]" value="Deutsch">
@@ -100,7 +101,7 @@ $user = $_SESSION['user'];
             <button type="button" class="btn" id="clearSearchBtn" onclick="clearSearch()">Alle Dateien anzeigen</button>
         </form>
         
-        <!-- New tag filter section -->
+        <!-- Tag filter section -->
         <div class="tag-filter-container">
             <h3>Nach Tags filtern</h3>
             <div class="tags-selection tag-filter">
@@ -135,41 +136,39 @@ $user = $_SESSION['user'];
         <div class="tag-filter-status" id="tagFilterStatus"></div>
     </div>
     
-<!-- Batch-Operationen Panel -->
-<div id="batch-operations-panel" class="batch-operations-panel hidden">
-    <div class="batch-header">
-        <div class="batch-selection">
-            <input type="checkbox" id="batch-select-all" class="batch-checkbox">
-            <label for="batch-select-all">Alle auswählen</label>
-            <span id="selected-count-wrapper">(<span id="selected-count">0</span> ausgewählt)</span>
+    <!-- Batch-Operationen Panel -->
+    <div id="batch-operations-panel" class="batch-operations-panel hidden">
+        <div class="batch-header">
+            <div class="batch-selection">
+                <input type="checkbox" id="batch-select-all" class="batch-checkbox">
+                <label for="batch-select-all">Alle auswählen</label>
+                <span id="selected-count-wrapper">(<span id="selected-count">0</span> ausgewählt)</span>
+            </div>
+            <div class="batch-actions">
+                <button id="batch-download-pdf-button" class="btn btn-success">Als PDF herunterladen</button>
+                <button id="batch-delete-button" class="btn btn-danger">Ausgewählte löschen</button>
+            </div>
         </div>
-        <div class="batch-actions">
-            <button id="batch-download-pdf-button" class="btn btn-success">Als PDF herunterladen</button>
-            <button id="batch-delete-button" class="btn btn-danger">Ausgewählte löschen</button>
+        <div id="batch-progress" class="batch-progress hidden">
+            <div class="progress-container">
+                <div id="batch-progress-bar" class="progress-bar">0%</div>
+            </div>
+            <p id="batch-progress-text">0/0 Dateien verarbeitet</p>
         </div>
     </div>
-    <div id="batch-progress" class="batch-progress hidden">
-        <div class="progress-container">
-            <div id="batch-progress-bar" class="progress-bar">0%</div>
-        </div>
-        <p id="batch-progress-text">0/0 Dateien verarbeitet</p>
-    </div>
-</div>
-    
     
     <div class="image-grid" id="imageGrid">
         <!-- Bilder werden hier dynamisch eingefügt -->
     </div>
 
-<!-- Am Ende des body-Tags die eigenen JS-Dateien einbinden -->
-<script src="js/utils.js"></script>
-<script src="js/pdf-handler.js"></script>
-<script src="js/ocr.js"></script>
-<script src="js/batch-operations.js"></script>
-<script src="js/tag-selection.js"></script>
-<script src="js/tag-filter.js"></script>
-<script src="js/core.js"></script>
-<script src="js/tag-editor.js"></script>
-
+    <!-- JavaScript Dateien einbinden -->
+    <script src="js/utils.js"></script>
+    <script src="js/pdf-handler.js"></script>
+    <script src="js/ocr.js"></script>
+    <script src="js/batch-operations.js"></script>
+    <script src="js/tag-selection.js"></script>
+    <script src="js/tag-filter.js"></script>
+    <script src="js/core.js"></script>
+    <script src="js/tag-editor.js"></script>
 </body>
 </html>

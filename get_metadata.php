@@ -1,5 +1,5 @@
 <?php
-// get_metadata.php - Gibt die Metadaten zu einem Bild zurück
+// get_metadata.php - Returns metadata for an image
 header('Content-Type: application/json');
 
 $response = ['success' => false, 'metadata' => null];
@@ -7,9 +7,9 @@ $response = ['success' => false, 'metadata' => null];
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['filename'])) {
     $filename = $_GET['filename'];
     
-    // Grundlegende Sicherheitsüberprüfung
+    // Basic security check
     if (strpos($filename, '/') !== false || strpos($filename, '\\') !== false) {
-        $response['message'] = 'Ungültiger Dateiname';
+        $response['message'] = 'Invalid filename';
     } else {
         $metaFile = 'meta/' . pathinfo($filename, PATHINFO_FILENAME) . '.json';
         
@@ -18,17 +18,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['filename'])) {
             $response['success'] = true;
             $response['metadata'] = $metadata;
         } else {
-            // Wenn keine Metadaten vorhanden sind, leere Metadaten zurückgeben
+            // Return empty metadata if none exists
             $response['success'] = true;
             $response['metadata'] = [
                 'filename' => $filename,
                 'tags' => [],
+                'language' => null, // Add language field
                 'upload_date' => ''
             ];
         }
     }
 } else {
-    $response['message'] = 'Ungültige Anfrage';
+    $response['message'] = 'Invalid request';
 }
 
 echo json_encode($response);

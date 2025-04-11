@@ -1,38 +1,38 @@
 /**
- * utils.js - Hilfsfunktionen für die Bildupload-Anwendung
- * Simplified version - clearSearch function will be replaced by tag-filter.js
+ * utils.js - Helper functions for the image upload application
+ * Updated with language display functionality
  */
 
-// Text mit Suchbegriff hervorheben
+// Highlight text with search term
 function highlightText(text, searchTerm) {
     if (!text || !searchTerm) return text;
     
-    // Regex für case-insensitive Suche
+    // Regex for case-insensitive search
     const regex = new RegExp(searchTerm, 'gi');
     return text.replace(regex, match => `<span class="highlight">${match}</span>`);
 }
 
-// Text formatieren für bessere Lesbarkeit
+// Format text for better readability
 function formatText(text) {
-    // Mehrfache Leerzeichen reduzieren
+    // Reduce multiple spaces
     text = text.replace(/\s+/g, ' ');
     
-    // Mehrfache Zeilenumbrüche reduzieren
+    // Reduce multiple line breaks
     text = text.replace(/\n\s*\n\s*\n/g, '\n\n');
     
-    // Absätze erkennen und formatieren
+    // Detect and format paragraphs
     text = text.replace(/([.!?])\s+(\w)/g, '$1\n\n$2');
     
-    // Listen erkennen und formatieren
+    // Detect and format lists
     text = text.replace(/(\d+\.\s*\w)/g, '\n$1');
     
-    // Bindestrich am Zeilenende erkennen und zusammenführen
+    // Detect and fix hyphenation at line breaks
     text = text.replace(/(\w+)-\n(\w+)/g, '$1$2');
     
     return text.trim();
 }
 
-// Gescannten Text auf dem Server speichern
+// Save scanned text on server
 function saveScannedText(filename, text) {
     fetch('save_text.php', {
         method: 'POST',
@@ -44,15 +44,15 @@ function saveScannedText(filename, text) {
     .then(response => response.json())
     .then(data => {
         if (!data.success) {
-            // Fehler beim Speichern des Textes - stille Behandlung
+            // Silent handling of saving error
         }
     })
     .catch(() => {
-        // Fehler still behandeln ohne Console-Ausgabe
+        // Silent handling of error without console output
     });
 }
 
-// Textinhalte aus gespeicherten Textdateien laden
+// Load text content from saved text files
 function loadText(filename, textElement) {
     fetch('get_text.php?filename=' + encodeURIComponent(filename))
         .then(response => response.json())
@@ -62,18 +62,61 @@ function loadText(filename, textElement) {
             }
         })
         .catch(() => {
-            // Fehler still behandeln ohne Console-Ausgabe
+            // Silent handling of error without console output
         });
 }
 
-// This function should replace the existing loadTags function in utils.js
+// Display language name based on language code
+function getLanguageName(langCode) {
+    const languages = {
+        'eng': 'English',
+        'ger': 'German',
+        'fre': 'French',
+        'spa': 'Spanish',
+        'ita': 'Italian',
+        'por': 'Portuguese',
+        'dut': 'Dutch',
+        'rus': 'Russian',
+        'chi_sim': 'Chinese (Simplified)',
+        'chi_tra': 'Chinese (Traditional)',
+        'jpn': 'Japanese',
+        'kor': 'Korean',
+        'ara': 'Arabic',
+        'tur': 'Turkish',
+        'pol': 'Polish',
+        'nor': 'Norwegian',
+        'swe': 'Swedish',
+        'fin': 'Finnish',
+        'dan': 'Danish',
+        'hun': 'Hungarian',
+        'cze': 'Czech',
+        'gre': 'Greek',
+        'rom': 'Romanian',
+        'bul': 'Bulgarian',
+        'slo': 'Slovak',
+        'slv': 'Slovenian',
+        'hrv': 'Croatian',
+        'ukr': 'Ukrainian',
+        'heb': 'Hebrew',
+        'tha': 'Thai',
+        'vie': 'Vietnamese',
+        'ind': 'Indonesian',
+        'mal': 'Malayalam',
+        'tel': 'Telugu',
+        'tam': 'Tamil',
+        'lat': 'Latin'
+    };
+    
+    return languages[langCode] || 'Unknown';
+}
 
-// Tags für ein Bild laden - improved with class-based styling and edit button
+// Load tags and language information for a file
 function loadTags(filename, tagsElement) {
     fetch('get_metadata.php?filename=' + encodeURIComponent(filename))
         .then(response => response.json())
         .then(data => {
             if (data.success && data.metadata) {
+                // Process tags
                 if (data.metadata.tags && data.metadata.tags.length > 0) {
                     tagsElement.innerHTML = '';
                     data.metadata.tags.forEach(tag => {
@@ -97,12 +140,36 @@ function loadTags(filename, tagsElement) {
                         tagsElement.appendChild(tagSpan);
                     });
                     
+                    // Add language indicator if available
+                    if (data.metadata.language) {
+                        const languageCode = data.metadata.language;
+                        const languageName = getLanguageName(languageCode);
+                        
+                        const langDiv = document.createElement('div');
+                        langDiv.className = `language-indicator language-${languageCode}`;
+                        langDiv.innerHTML = `<span class="language-flag"></span> ${languageName}`;
+                        
+                        tagsElement.appendChild(langDiv);
+                    }
+                    
                     // Add edit button to the tags container (if tagEditor is available)
                     if (typeof tagEditor !== 'undefined') {
                         tagEditor.addEditButton(tagsElement);
                     }
                 } else {
-                    tagsElement.innerHTML = '<span class="no-tags">Keine Tags</span>';
+                    tagsElement.innerHTML = '<span class="no-tags">No Tags</span>';
+                    
+                    // Add language indicator if available even without tags
+                    if (data.metadata.language) {
+                        const languageCode = data.metadata.language;
+                        const languageName = getLanguageName(languageCode);
+                        
+                        const langDiv = document.createElement('div');
+                        langDiv.className = `language-indicator language-${languageCode}`;
+                        langDiv.innerHTML = `<span class="language-flag"></span> ${languageName}`;
+                        
+                        tagsElement.appendChild(langDiv);
+                    }
                     
                     // Add edit button even when there are no tags
                     if (typeof tagEditor !== 'undefined') {
@@ -110,7 +177,7 @@ function loadTags(filename, tagsElement) {
                     }
                 }
             } else {
-                tagsElement.innerHTML = '<span class="no-tags">Keine Tags</span>';
+                tagsElement.innerHTML = '<span class="no-tags">No Tags</span>';
                 
                 // Add edit button even when metadata is not available
                 if (typeof tagEditor !== 'undefined') {
@@ -119,7 +186,7 @@ function loadTags(filename, tagsElement) {
             }
         })
         .catch(() => {
-            tagsElement.innerHTML = '<span class="no-tags">Keine Tags</span>';
+            tagsElement.innerHTML = '<span class="no-tags">No Tags</span>';
             
             // Add edit button even in case of an error
             if (typeof tagEditor !== 'undefined') {
@@ -128,20 +195,20 @@ function loadTags(filename, tagsElement) {
         });
 }
 
-// Datei drucken
+// Print file
 function printFile(filename) {
     const fileExtension = filename.split('.').pop().toLowerCase();
     const isPdf = fileExtension === 'pdf';
     const fileUrl = 'uploads/' + filename;
     
-    // Für PDFs
+    // For PDFs
     if (isPdf) {
         window.open(fileUrl, '_blank');
     } 
-    // Für Bilder
+    // For images
     else {
         var printWin = window.open('', '_blank');
-        printWin.document.write('<html><head><title>Drucken</title>');
+        printWin.document.write('<html><head><title>Print</title>');
         printWin.document.write('<style>body{margin:0;padding:0;text-align:center;}img{max-width:100%;height:auto;}</style>');
         printWin.document.write('</head><body>');
         printWin.document.write('<img src="' + fileUrl + '" alt="' + filename + '">');
@@ -161,9 +228,9 @@ function clearSearch() {
     loadImages();
 }
 
-// Bild löschen
+// Delete image
 function deleteImage(filename) {
-    if (confirm('Sind Sie sicher, dass Sie diese Datei löschen möchten?')) {
+    if (confirm('Are you sure you want to delete this file?')) {
         fetch('delete_image.php', {
             method: 'POST',
             headers: {
@@ -174,26 +241,26 @@ function deleteImage(filename) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Datei aus der Batch-Auswahl entfernen, wenn vorhanden
+                // Remove file from batch selection if present
                 if (typeof batchOperations !== 'undefined') {
                     batchOperations.removeFromSelection(filename);
                     batchOperations.updateBatchPanel();
                 }
                 
-                // Aktuelle Ansicht aktualisieren basierend auf Filter-Status
+                // Update current view based on filter status
                 if (typeof tagFilter !== 'undefined') {
                     if (tagFilter.isFiltering) {
-                        // Wenn Tag-Filter aktiv ist, Filter erneut anwenden
+                        // If tag filter is active, reapply filter
                         tagFilter.applyFilter();
                     } else if (tagFilter.currentSearchTerm) {
-                        // Wenn nur Textsuche aktiv ist
+                        // If only text search is active
                         searchFiles(tagFilter.currentSearchTerm);
                     } else {
-                        // Standard: Alle Bilder laden
+                        // Default: Load all images
                         loadImages();
                     }
                 } else {
-                    // Wenn tagFilter nicht definiert ist - Standardverhalten
+                    // Default behavior if tagFilter is not defined
                     const searchInput = document.getElementById('searchInput');
                     const searchTerm = searchInput.value.trim();
                     
@@ -204,12 +271,12 @@ function deleteImage(filename) {
                     }
                 }
             } else {
-                alert('Fehler beim Löschen der Datei: ' + data.message);
+                alert('Error deleting file: ' + data.message);
             }
         })
         .catch(() => {
-            // Fehler still behandeln ohne Console-Ausgabe
-            alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
+            // Silent error handling
+            alert('An error occurred. Please try again.');
         });
     }
 }

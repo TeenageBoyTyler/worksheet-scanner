@@ -1,8 +1,8 @@
 <?php
-// ocr_space_proxy.php - Verbesserter Proxy für Space OCR API-Anfragen
+// ocr_space_proxy.php - Simplified proxy for Space OCR API with basic error handling
 header('Content-Type: application/json');
 
-// Debug-Funktion
+// Debug function - write messages to ocr_debug.log
 function logDebug($message, $data = []) {
     $logFile = 'ocr_debug.log';
     $timestamp = date('Y-m-d H:i:s');
@@ -16,23 +16,23 @@ function logDebug($message, $data = []) {
     file_put_contents($logFile, $logEntry, FILE_APPEND);
 }
 
-// Initialisiere die Antwort
+// Initialize response
 $response = ['success' => false, 'message' => '', 'text' => ''];
 
-// Logge den Start der Anfrage
+// Log start of request
 logDebug("Neue OCR-Anfrage empfangen", [
     'method' => $_SERVER['REQUEST_METHOD'],
     'content_type' => $_SERVER['CONTENT_TYPE'] ?? 'nicht definiert'
 ]);
 
-// Nur POST-Anfragen akzeptieren
+// Only accept POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $response['message'] = 'Nur POST-Anfragen erlaubt';
     echo json_encode($response);
     exit;
 }
 
-// Lies den API-Key aus der Konfigurationsdatei
+// Read API key from configuration file
 $configFile = __DIR__ . '/config/ocr_config.json';
 if (!file_exists($configFile)) {
     logDebug("Konfigurationsdatei nicht gefunden", ['path' => $configFile]);
@@ -54,7 +54,7 @@ if (!$configData || !isset($configData['space_ocr_api_key']) || empty($configDat
 $apiKey = $configData['space_ocr_api_key'];
 logDebug("API-Key gefunden", ['key_length' => strlen($apiKey)]);
 
-// Prüfe nach JSON-Daten im Body
+// Check for JSON data in the request body
 $jsonInput = null;
 $inputData = file_get_contents('php://input');
 if (!empty($inputData)) {
@@ -65,25 +65,25 @@ if (!empty($inputData)) {
     ]);
 }
 
-// Verarbeite die Anfrage je nach Input-Typ
+// Process the request based on input type
 if ($jsonInput && isset($jsonInput['base64Image'])) {
-    // Base64-Bildverarbeitung
+    // Base64 image processing
     $base64Image = $jsonInput['base64Image'];
-    $language = isset($jsonInput['language']) ? $jsonInput['language'] : 'ger'; // Default: Deutsch
+    $language = isset($jsonInput['language']) ? $jsonInput['language'] : 'ger'; // Default to German
     
     logDebug("Verarbeite Base64-Bild", [
         'base64_length' => strlen($base64Image),
         'language' => $language
     ]);
     
-    // Space OCR API-Anfrage mit Base64-Daten
+    // Send request to Space OCR API with Base64 data
     $postData = array(
         'apikey' => $apiKey,
         'language' => $language,
         'isOverlayRequired' => 'false',
         'detectOrientation' => 'true',
         'scale' => 'true',
-        'OCREngine' => '2', // Engine 2 für bessere Genauigkeit
+        'OCREngine' => '2', // Engine 2 for better accuracy
         'base64Image' => 'data:image/jpeg;base64,' . $base64Image
     );
     
@@ -96,9 +96,9 @@ if ($jsonInput && isset($jsonInput['base64Image'])) {
     ]);
     
 } elseif (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-    // Datei-Upload-Verarbeitung
+    // File upload processing
     $uploadedFile = $_FILES['image']['tmp_name'];
-    $language = isset($_POST['language']) ? $_POST['language'] : 'ger'; // Default: Deutsch
+    $language = isset($_POST['language']) ? $_POST['language'] : 'ger'; // Default to German
     
     logDebug("Verarbeite hochgeladene Datei", [
         'filename' => $_FILES['image']['name'],
@@ -106,7 +106,7 @@ if ($jsonInput && isset($jsonInput['base64Image'])) {
         'language' => $language
     ]);
     
-    // Space OCR API-Anfrage mit Datei-Upload
+    // Create OCR request with file
     $ch = curl_init('https://api.ocr.space/parse/image');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
@@ -117,12 +117,11 @@ if ($jsonInput && isset($jsonInput['base64Image'])) {
         'isOverlayRequired' => 'false',
         'detectOrientation' => 'true',
         'scale' => 'true',
-        'OCREngine' => '2', // Engine 2 für bessere Genauigkeit
+        'OCREngine' => '2',
         'file' => new CURLFile($uploadedFile, 'image/jpeg', 'image.jpg')
     ];
     
     curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
-    
 } else {
     logDebug("Keine Bild- oder Base64-Daten gefunden", [
         'has_files' => isset($_FILES) ? array_keys($_FILES) : 'keine',
@@ -135,17 +134,11 @@ if ($jsonInput && isset($jsonInput['base64Image'])) {
     exit;
 }
 
-// Führe die API-Anfrage aus
+// Execute the API request
 logDebug("Sende Anfrage an OCR.space API");
 $result = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-
-logDebug("API-Antwort erhalten", [
-    'http_code' => $httpCode,
-    'content_type' => $contentType,
-    'response_size' => strlen($result)
-]);
 
 if ($result === false) {
     $curlError = curl_error($ch);
@@ -158,7 +151,7 @@ if ($result === false) {
 
 curl_close($ch);
 
-// Verarbeite die API-Antwort
+// Process the API response
 $apiResponse = json_decode($result, true);
 
 if ($apiResponse === null) {
@@ -169,9 +162,8 @@ if ($apiResponse === null) {
     exit;
 }
 
-logDebug("API-Antwort geparst", $apiResponse);
-
-if ($httpCode !== 200 || isset($apiResponse['ErrorMessage']) && !empty($apiResponse['ErrorMessage'])) {
+// Check for API errors
+if ($httpCode !== 200 || (isset($apiResponse['ErrorMessage']) && !empty($apiResponse['ErrorMessage']))) {
     $errorMsg = isset($apiResponse['ErrorMessage']) ? $apiResponse['ErrorMessage'] : 'Unbekannter API-Fehler';
     logDebug("API-Fehler", ['error_message' => $errorMsg]);
     
@@ -180,7 +172,7 @@ if ($httpCode !== 200 || isset($apiResponse['ErrorMessage']) && !empty($apiRespo
     exit;
 }
 
-// Extrahiere den erkannten Text
+// Extract recognized text
 $parsedText = '';
 if (isset($apiResponse['ParsedResults']) && is_array($apiResponse['ParsedResults'])) {
     foreach ($apiResponse['ParsedResults'] as $parsedResult) {
@@ -206,10 +198,17 @@ if (empty($parsedText)) {
     exit;
 }
 
-// Erfolgreiche Antwort
+// Successful response
 $response['success'] = true;
 $response['text'] = $parsedText;
+if (isset($language)) {
+    $response['language'] = $language; // Just return the language that was used
+}
 
-logDebug("Erfolgreiche Verarbeitung", ['text_length' => strlen($parsedText)]);
+logDebug("Erfolgreiche Verarbeitung", [
+    'text_length' => strlen($parsedText),
+    'language' => $language ?? 'nicht angegeben'
+]);
+
 echo json_encode($response);
 ?>
