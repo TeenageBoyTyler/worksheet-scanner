@@ -24,7 +24,7 @@
 }
 
 .image-card:hover {
-    transform: translateY(-2px);
+    transform: scale(1.02);
 }
 
 .image-card img {
